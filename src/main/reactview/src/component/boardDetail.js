@@ -97,28 +97,28 @@ const fetchData = () => {
         });
     };
 
-  const purchasingReq = () => {
-      axios
-        .post('/api/purchasingReq', tradeBoard.id, {
-          headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': csrfToken,
-          },
-        })
-        .then((response) => {
-          window.location.href = response.data;
-        })
-        .catch((error) => {
-             if (error.response && error.response.status === 400) {
-                      alert("이미 존재하는 구매 요청입니다.");
-                      window.location.href = error.response.data;
-             } else {
-               // Other errors - Show generic error message in alert
-               console.log(error);
-               alert('An error occurred.');
-             }
-           });
-    };
+  const chatRoom = () => {
+        axios
+          .post('/chatRoom', tradeBoard.id, {
+            headers: {
+              'Content-Type': 'application/json',
+              'X-CSRF-TOKEN': csrfToken,
+            },
+          })
+          .then((response) => {
+              window.location.href = window.location.origin + '/getchatting';
+          })
+          .catch((error) => {
+               if (error.response && error.response.status === 400) {
+                        alert("이미 존재하는 구매 요청입니다.");
+                        window.location.href = error.response.data;
+               } else {
+                 // Other errors - Show generic error message in alert
+                 console.log(error);
+                 alert('An error occurred.');
+               }
+             });
+      };
 
  const handleDeleteClick = () => {
    axios
@@ -174,10 +174,10 @@ const fetchData = () => {
           </Col>
           <Col className="button-groups">
             {!isAuthor &&<Button variant="primary" onClick={incrementInterestingCount}>찜하기</Button>}
-            {!isAuthor &&<Button variant="secondary">채팅</Button>}
-            {!isAuthor &&<Button variant="success" onClick={purchasingReq}>
-              구매 신청
-            </Button>}
+            {!isAuthor &&<Button variant="secondary" onClick={chatRoom}>채팅</Button>}
+                  {/*{!isAuthor &&<Button variant="success" onClick={purchasingReq}>*/}
+           {/*  구매 신청*/}
+           {/*</Button>}*/}
           </Col>
         </Col>
       </Row>

@@ -52,4 +52,6 @@ public interface TradeRepository extends JpaRepository<Trade, Long> {
 
     List<Trade> findAllByTradeDateBeforeAndStatus(LocalDate tradeDate, String status);
 
+    Trade findByBoardIdAndBuyerId(TradeBoard tradeBoardId, User buyer);
+
 }
