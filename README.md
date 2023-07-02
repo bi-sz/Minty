@@ -12,3 +12,15 @@ React의 생명주기 메서드와 Hook 등의 개념을 이해하고 적용하�
 
 이 경험은 저에게 많은 도전과 학습의 기회를 제공했고, 이를 통해 웹 개발에 대한 보다 깊은 이해와 역량을 키울 수 있었습니다.
 앞으로도 React와 같은 최신 프레임워크와 API를 적극 활용하여, 효과적이고 최신 기술 기반의 프로젝트를 구축하겠습니다.
+
+### 주요 기능
+사용자 : 중고물품 판매, 급해요 시스템, 시세 조회, 잔고 충전 출금, 포인트 서비스, 이벤트(출석,룰렛), 채팅, 지역채팅, 고객문의, 광고문의
+관리자 : 대시보드, 사용자 관리, 컨텐츠 관리, 마케팅 관리, 수입 관리, 통계, 메인페이지 관리, 고객지원
+
+## 🔨 Technology Stack(s)
+
+* Frontend : HTML5, CSS3, JavaScript, React
+* Backend : Java, Python
+* Framework : Spring boot
+* Database : My SQL
+* Version Control : Git, GitHub
