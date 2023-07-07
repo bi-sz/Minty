@@ -256,6 +256,14 @@
         color: white;
         box-shadow: 3px 3px 15px #5bc27e;
       }
+      input[type="text"] {
+    border: 1px solid #000;
+    border-radius: 5px;
+    padding: 5px;
+}
+.no-clock-icon {
+    background-image: none !important;
+}
     </style>
 </head>
 <body>
@@ -280,6 +288,8 @@
                 </div>
             </div>
         </div>
+
+        <br>
 
         <!-- 거래 희망 요일 -->
         <div th:if="${role} == 'seller'">
@@ -328,6 +338,8 @@
             </div>
         </div>
 
+        <br>
+
         <!-- 거래 희망 시간 -->
         <div th:if="${role} == 'seller'">
             <div th:if="${buyerScheduleDuration.isEmpty()}">
@@ -336,12 +348,14 @@
                 <br />
             </div>
 
-            <div th:if="${!buyerScheduleDuration.isEmpty()}">
+            <div style="margin-left:auto; margin-right:auto;width:80%" th:if="${!buyerScheduleDuration.isEmpty()}">
                 <th:block th:each="duration : ${buyerScheduleDuration}">
                     <input class="timer" type="time" name="time" oninput="updateText()" th:value="${duration.startTime}"/>
                     ~
                     <input class="timer" type="time" name="time" oninput="updateText()" th:value="${duration.endTime}"/>
+                    <br>
                 </th:block>
+                <br>
             </div>
         </div>
 
@@ -353,7 +367,7 @@
                 <br />
             </div>
 
-            <div th:if="${!sellerScheduleDuration.isEmpty()}">
+            <div style="margin-left:auto; margin-right:auto;width:80%" th:if="${!sellerScheduleDuration.isEmpty()}">
                 <th:block th:each="duration : ${sellerScheduleDuration}">
                     <input class="timer" type="time" name="time" oninput="updateText()" th:value="${duration.startTime}"/>
                     ~
@@ -362,6 +376,7 @@
             </div>
         </div>
 
+        <br>
 
         <!-- 거래 희망 위치 -->
         <div th:if="${role} == 'seller'">
@@ -370,7 +385,7 @@
             </div>
 
             <div th:if="${buyerSchedule != null && buyerCheckArea}">
-                <input type="text" th:value="${buyerSchedule.getHopeArea()}" id="hopeArea" readonly>
+                <input class="no-clock-icon" type="text" th:value="${buyerSchedule.getHopeArea()}" id="hopeArea" readonly>
             </div>
         </div>
 
@@ -380,30 +395,32 @@
             </div>
 
             <div th:if="${sellerSchedule != null && sellerCheckArea}">
-                <input type="text" th:value="${sellerSchedule.getHopeArea()}" id="hopeArea2" readonly>
+                <input class="no-clock-icon" type="text" th:value="${sellerSchedule.getHopeArea()}" id="hopeArea2" readonly>
             </div>
         </div>
+
+        <br>
 
         <!-- 거래 희망 소개 -->
         <div th:if="${role} == 'seller'">
             <div th:if="${buyerSchedule == null || !buyerCheckIntroduction}">
                 <p>등록된 거래희망 소개가 없습니다.</p>
-                <input class="memo hd" placeholder="거래희망 소개를 등록해주세요" style="width: 50%; text-align: center"/>
+                <input class="memo hd no-clock-icon" placeholder="거래희망 소개를 등록해주세요" style="width: 50%; text-align: center"/>
             </div>
 
             <div th:if="${buyerSchedule != null && buyerCheckIntroduction}">
-                <input type="text" th:value="${buyerSchedule.getIntroduction()}" id="introduction" readonly>
+                <input class="no-clock-icon" type="text" th:value="${buyerSchedule.getIntroduction()}" id="introduction" readonly>
             </div>
         </div>
 
         <div th:if="${role} == 'buyer'">
             <div th:if="${sellerSchedule == null || !sellerCheckIntroduction}">
                 <p>등록된 거래희망 소개가 없습니다.</p>
-                <input class="memo hd" placeholder="거래희망 소개를 등록해주세요" style="width: 50%; text-align: center"/>
+                <input class="memo hd no-clock-icon" placeholder="거래희망 소개를 등록해주세요" style="width: 50%; text-align: center"/>
             </div>
 
             <div th:if="${sellerSchedule != null && sellerCheckIntroduction}">
-                <input type="text" th:value="${sellerSchedule.getIntroduction()}" id="introduction2" readonly>
+                <input class="no-clock-icon" type="text" th:value="${sellerSchedule.getIntroduction()}" id="introduction2" readonly>
             </div>
         </div>
     </div>

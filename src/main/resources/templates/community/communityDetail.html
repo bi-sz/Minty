@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="kr" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/layout}">
+<head>
+  <link href="https://fonts.googleapis.com/css2?family=Lato&display=swap" rel="stylesheet">
+  <style>
+    .profile-image {
+        border-radius: 50%;
+    }
+  </style>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+<div layout:fragment="content">
+  <div class="container">
+    <div class="row">
+      <div class="col">
+        <h2><span th:text="'[' + ${community.status} + '] ' + ${community.title}"></span></h2>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-xs-1">
+        <img src="UserImagePlaceholderURL" class="profile-image" />
+      </div>
+      <div class="col">
+        <h3><span th:text="'작성자 : ' + ${user.nickName}"></span></h3>
+        <span th:text="${community.createdDate}"></span>
+
+      </div>
+    </div>
+    <hr />
+    <div class="row">
+      <div class="col">
+        <span th:text="${community.content}"></span>
+      </div>
+    </div>
+    <hr />
+    <div class="row">
+      <div class="col-xs-1">
+        <img src="UserImagePlaceholderURL" class="profile-image" />
+      </div>
+      <div class="col">
+        <span th:text="${user.nickName} +' 님의 게시글 더보기 >'"></span>
+        <span th:text="'좋아요 '+ ${community.interesting}"></span>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

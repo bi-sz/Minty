@@ -68,7 +68,7 @@ function Header({ csrfToken }) {
                             급해요
                         </a>
                         <p></p>
-                        <a href="event" className="nav-link menu-a">
+                        <a href="/event" className="nav-link menu-a">
                             이벤트
                         </a>
                         <p></p>

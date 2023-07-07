@@ -3,6 +3,7 @@ package com.Reboot.Minty.trade.service;
 import com.Reboot.Minty.manager.entity.ManagerStatistics;
 import com.Reboot.Minty.manager.repository.ManagerStatisticsRepository;
 import com.Reboot.Minty.member.entity.User;
+import com.Reboot.Minty.member.repository.UserRepository;
 import com.Reboot.Minty.trade.entity.Trade;
 import com.Reboot.Minty.trade.repository.TradeRepository;
 import com.Reboot.Minty.tradeBoard.constant.TradeStatus;
@@ -25,14 +26,15 @@ import java.util.List;
 public class TradeService {
     private final TradeRepository tradeRepository;
     private final TradeBoardRepository tradeBoardRepository;
-
     private final ManagerStatisticsRepository managerStatisticsRepository;
+    private final UserRepository userRepository;
 
     @Autowired
-    public TradeService(TradeRepository tradeRepository, TradeBoardRepository tradeBoardRepository, ManagerStatisticsRepository managerStatisticsRepository) {
+    public TradeService(TradeRepository tradeRepository, TradeBoardRepository tradeBoardRepository, ManagerStatisticsRepository managerStatisticsRepository, UserRepository userRepository) {
         this.tradeRepository = tradeRepository;
         this.tradeBoardRepository = tradeBoardRepository;
         this.managerStatisticsRepository = managerStatisticsRepository;
+        this.userRepository = userRepository;
     }
 
     public Page<Trade> getList(User user, Pageable pageable) {
@@ -149,19 +151,48 @@ public class TradeService {
         }
     }
 
-    public void updateMode(Long tradeId, int modeIndex) {
+    public String updateMode(Long tradeId, int modeIndex, User buyer, User seller) {
         String[] modes = {"직거래", "안전거래"};
+        String errorMessage = null;
 
         if (modeIndex >= 0 && modeIndex < modes.length) {
             String newMode = modes[modeIndex];
 
-            tradeRepository.updateModeById(tradeId, newMode);
+            Trade trade = tradeRepository.findById(tradeId).orElseThrow(() -> new RuntimeException("Trade not found"));
+            TradeBoard tradeBoard = trade.getBoardId();
 
+            if (newMode.equals("안전거래")) {
+                int requiredSellerBalance = (int)(tradeBoard.getPrice() * 0.10); // calculate 10% of the price for seller
+                int requiredBuyerBalance = tradeBoard.getPrice(); // calculate the total price for buyer
+
+                if (buyer.getBalance() < requiredBuyerBalance) {
+                    errorMessage = "구매자님의 잔고가 충분하지 않습니다.";
+                }
+
+                if (seller.getBalance() < requiredSellerBalance) {
+                    if (errorMessage == null) {
+                        errorMessage = "판매자님의 잔고가 충분하지 않습니다.";
+                    } else {
+                        errorMessage += " 그리고 판매자님의 잔고도 충분하지 않습니다.";
+                    }
+                }
+
+                if (errorMessage != null) {
+                    return errorMessage;
+                }
+            }
+
+            tradeRepository.updateModeById(tradeId, newMode);
             System.out.println("Trade " + tradeId + "의 모드가 " + newMode + "로 변경되었습니다.");
         } else {
-            System.out.println("Invalid status index.");
+            System.out.println("Invalid mode index.");
         }
+
+        return errorMessage;
     }
+
+
+
 
     public void updateTradeSchedule(Long tradeId, LocalDate tradeDate, LocalTime tradeTime) {
         tradeRepository.updateScheduleInfo(tradeId, tradeDate, tradeTime);
@@ -209,7 +240,7 @@ public class TradeService {
     }
 
     @Transactional
-    public void completionTrade(Long tradeId, String role) {
+    public void completionTrade(Long tradeId, String role, User buyer, User seller) {
         Trade trade = tradeRepository.findById(tradeId).orElse(null);
         if (trade == null) {
             // Trade가 존재하지 않는 경우 처리할 로직을 작성하세요.
@@ -220,6 +251,16 @@ public class TradeService {
             if (trade.getBuyerCheck().equals("Y")) {
                 trade.setStatus("거래완료");
                 trade.setEndDate(LocalDateTime.now());
+
+                if (trade.getMode().equals("안전거래")) {
+                    int tradePrice = trade.getBoardId().getPrice();
+                    buyer.setBalance(buyer.getBalance() - tradePrice); // buyer's balance is deducted by the trade price
+                    seller.setBalance(seller.getBalance() + tradePrice); // seller's balance is increased by the trade price
+
+                    // Make sure to save the updated user balances
+                    userRepository.save(buyer);
+                    userRepository.save(seller);
+                }
 
                 ManagerStatistics managerStatistics = managerStatisticsRepository.findByVisitDate(LocalDate.now());
                 if (managerStatistics != null) {
@@ -234,6 +275,16 @@ public class TradeService {
             if (trade.getSellerCheck().equals("Y")) {
                 trade.setStatus("거래완료");
                 trade.setEndDate(LocalDateTime.now());
+
+                if (trade.getMode().equals("안전거래")) {
+                    int tradePrice = trade.getBoardId().getPrice();
+                    buyer.setBalance(buyer.getBalance() - tradePrice); // buyer's balance is deducted by the trade price
+                    seller.setBalance(seller.getBalance() + tradePrice); // seller's balance is increased by the trade price
+
+                    // Make sure to save the updated user balances
+                    userRepository.save(buyer);
+                    userRepository.save(seller);
+                }
 
                 ManagerStatistics managerStatistics = managerStatisticsRepository.findByVisitDate(LocalDate.now());
                 if (managerStatistics != null) {

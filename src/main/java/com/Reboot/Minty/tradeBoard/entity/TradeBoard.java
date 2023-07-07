@@ -62,6 +62,7 @@ public class TradeBoard {
     private SubCategory subCategory;
 
     private String thumbnail;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user", nullable = false)
     private User user;
