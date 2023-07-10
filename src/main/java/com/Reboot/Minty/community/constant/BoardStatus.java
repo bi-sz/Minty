@@ -4,5 +4,5 @@ import lombok.Getter;
 
 @Getter
 public enum BoardStatus {
-    GENERA, NOTICE, AD
+    GENERAL, NOTICE, AD
 }

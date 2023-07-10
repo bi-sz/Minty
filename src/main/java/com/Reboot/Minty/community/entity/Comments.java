@@ -1,8 +1,6 @@
 package com.Reboot.Minty.community.entity;
 
-import com.Reboot.Minty.community.constant.BoardStatus;
 import com.Reboot.Minty.member.entity.User;
-import com.Reboot.Minty.tradeBoard.constant.TradeStatus;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -11,17 +9,26 @@ import org.hibernate.annotations.DynamicInsert;
 import java.sql.Timestamp;
 
 @Entity
-@Table(name = "community")
+@Table(name = "comments")
 @Getter
 @Setter
 @DynamicInsert
-public class Community {
+public class Comments {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private String title;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "community", nullable = false)
+    private Community community;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user", nullable = false)
+    private User user;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "tag_user")
+    private User tagUser;
 
     @Column(nullable = false)
     private String content;
@@ -34,15 +41,4 @@ public class Community {
 
     @Column(nullable = false)
     private int interesting;
-
-    @Column(columnDefinition = "INT DEFAULT 0", nullable = false)
-    private int visitCount;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user", nullable = false)
-    private User user;
-
-    @Enumerated(EnumType.STRING)
-    private BoardStatus status;
-
 }

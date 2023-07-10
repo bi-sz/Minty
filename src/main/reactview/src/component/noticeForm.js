@@ -14,7 +14,7 @@ function CommonForm() {
         const data = {
             title,
             content,
-            status: 'GENERAL'
+            status: 'NOTICE'
         };
 
         try {
@@ -36,7 +36,7 @@ function CommonForm() {
         <Row className="justify-content-center">
             <Col md={6}>
                 <Form onSubmit={handleSubmit}>
-                    <h4>일반게시판 양식</h4>
+                    <h4>커뮤니티게시판 공지 양식</h4>
                     <Form.Group className="mb-3 d-flex" controlId="exampleForm.ControlInput1">
                         <Form.Label className="me-2">제목</Form.Label>
                         <Form.Control

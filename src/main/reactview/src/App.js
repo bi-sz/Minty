@@ -1,7 +1,5 @@
 import './App.css';
 import React, { useState, useEffect } from "react";
-import CommonList from './component/CommonList';
-import CommonDetail from './component/CommonDetail';
 import WriteForm from './component/writeForm';
 import BoardList from './component/boardList';
 import Header from './component/header';
@@ -49,7 +47,6 @@ function App() {
                     <Route path="/jobList/:page" element={<JobList />} />
                     <Route path="/jobList/searchQuery/:searchBy/:searchQuery" element={<JobList />} />
                     <Route path="/jobList/searchQuery/:searchBy/:searchQuery/:page" element={<JobList />} />
-                    <Route path="/commonDetail/:id" element={<CommonDetail />} />
                 </Routes>
             </div>
         </React.Fragment>

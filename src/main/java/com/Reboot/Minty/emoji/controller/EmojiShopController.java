@@ -45,8 +45,6 @@ public class EmojiShopController {
         return "event/emojiRegister";
     }
 
-
-
     @GetMapping("/emojiDetail/{id}")
     public String showEmojiDetail(@PathVariable("id") Long id, Model model) {
         EmojiShop emojiShop = emojiShopService.getEmojiShopById(id);
@@ -63,9 +61,6 @@ public class EmojiShopController {
 
         return "event/emojiDetail";
     }
-
-
-
 
 //    @GetMapping("/emojiDetail/{id}")
 //    public String showEmojiDetail(@PathVariable("id") Long id, Model model) {

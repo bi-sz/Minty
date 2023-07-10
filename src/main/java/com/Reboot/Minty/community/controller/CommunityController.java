@@ -1,10 +1,16 @@
 package com.Reboot.Minty.community.controller;
 
+import com.Reboot.Minty.community.constant.BoardStatus;
+import com.Reboot.Minty.community.entity.Comments;
 import com.Reboot.Minty.community.entity.Community;
+import com.Reboot.Minty.community.entity.CommunityLike;
 import com.Reboot.Minty.community.repository.CommunityRepository;
+import com.Reboot.Minty.community.repository.CommunityLikeRepository;
+import com.Reboot.Minty.community.service.CommentsService;
 import com.Reboot.Minty.community.service.CommunityService;
 import com.Reboot.Minty.member.entity.User;
 import com.Reboot.Minty.member.repository.UserRepository;
+import com.Reboot.Minty.member.service.UserService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -26,11 +32,20 @@ public class CommunityController {
 
     private final CommunityRepository communityRepository;
 
+    private final CommentsService commentsService;
+
+    private final UserService userService;
+
+    private final CommunityLikeRepository communityLikeRepository;
+
     @Autowired
-    public CommunityController(CommunityService communityService, UserRepository userRepository, CommunityRepository communityRepository) {
+    public CommunityController(CommunityService communityService, UserRepository userRepository, CommunityRepository communityRepository, CommentsService commentsService, UserService userService, CommunityLikeRepository communityLikeRepository) {
         this.communityService = communityService;
         this.userRepository = userRepository;
         this.communityRepository = communityRepository;
+        this.commentsService = commentsService;
+        this.userService = userService;
+        this.communityLikeRepository = communityLikeRepository;
     }
 
     @GetMapping("/communityDetail/{postId}")
@@ -38,10 +53,38 @@ public class CommunityController {
         Community community = communityRepository.findById(id).orElseThrow(EntityNotFoundException::new);
         HttpSession session = request.getSession();
         Long userId = (Long) session.getAttribute("userId");
-        User user = community.getUser();
+        User writer = community.getUser();
+        User user = userRepository.findById(userId).orElseThrow(EntityNotFoundException::new);
+
+        community.setVisitCount(community.getVisitCount() + 1);
+        communityRepository.save(community);
+
+        String status;
+        switch (community.getStatus().toString()) {
+            case "GENERAL":
+                status = "일반";
+                break;
+            case "NOTICE":
+                status = "공지";
+                break;
+            case "AD":
+                status = "광고";
+                break;
+            default:
+                status = "일반";
+                break;
+        }
+
+        List<Comments> comments = commentsService.getCommentsByCommunityId(community.getId());
+
+        List<CommunityLike> likes = communityLikeRepository.findByCommunity(community);
 
         model.addAttribute("community", community);
+        model.addAttribute("status", status);
+        model.addAttribute("writer", writer);
         model.addAttribute("user", user);
+        model.addAttribute("comments", comments);
+        model.addAttribute("likes", likes);
 
         return "/community/communityDetail";
     }
@@ -54,10 +97,14 @@ public class CommunityController {
 
         community.setUser(user);
 
+        BoardStatus boardStatus = community.getStatus();
+        community.setStatus(boardStatus);
+
         Community savedCommunity = communityService.addPost(community);
 
         return ResponseEntity.ok(savedCommunity);
     }
+
 
     @GetMapping("/communityList")
     public String communityList(Model model) {
@@ -66,6 +113,23 @@ public class CommunityController {
         return "/community/communityList";
     }
 
+    @PostMapping("/comments")
+    public String addComments(HttpServletRequest request, @RequestParam Long communityId, @RequestParam String commentContent, @RequestParam(required = false) Long tagUserId) {
+        HttpSession session = request.getSession();
+        Long userId = (Long) session.getAttribute("userId");
+        User user = userRepository.findById(userId).orElseThrow(EntityNotFoundException::new);
+
+        Community community = communityRepository.findById(communityId).orElseThrow(EntityNotFoundException::new);
+
+        User tagUser = null;
+        if (tagUserId != null) {
+            tagUser = userRepository.findById(tagUserId).orElseThrow(EntityNotFoundException::new);
+        }
+
+        commentsService.addComments(community, user, commentContent, tagUser);
+
+        return "redirect:/communityDetail/" + community.getId();
+    }
 
 
 }

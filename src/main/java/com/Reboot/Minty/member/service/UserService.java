@@ -1,5 +1,6 @@
 package com.Reboot.Minty.member.service;
 
+import com.Reboot.Minty.community.entity.Comments;
 import com.Reboot.Minty.manager.entity.ManagerStatistics;
 import com.Reboot.Minty.manager.repository.ManagerStatisticsRepository;
 import com.Reboot.Minty.member.constant.Role;
@@ -22,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -214,4 +216,6 @@ public class UserService implements UserDetailsService {
     public List<User> getUsersWithWithdrawalDateBefore(LocalDate date) {
         return userRepository.findByWithdrawalDateBefore(date);
     }
+
+
 }

@@ -3,6 +3,8 @@ import { useEffect, useState, useRef } from "react";
 import { useLocation } from 'react-router-dom';
 import axios from 'axios';
 import CommonForm from './commonForm';
+import AdForm from './adForm';
+import NoticeForm from './noticeForm';
 import TradeForm from './tradeForm';
 import JobForm from './jobForm';
 import '../css/writeForm.css';
@@ -22,6 +24,8 @@ function WriteForm(props) {
      const location = useLocation();
     useEffect(() => {
      if (location.state) {
+        console.log(location.state);
+        console.log(JSON.stringify(location.state));
           const temp = location.state.tradeBoard;
           setTargetCategory("tradeBoard");
           setTradeBoard(temp);
@@ -86,7 +90,6 @@ function WriteForm(props) {
         setSelectedSubCateId
     }) {
         return (
-
             <Row className={`justify-content-center trade-category-container ${targetCategory !== 'tradeBoard' || (subCategory !== 'trade') ? 'hidden' : ''}`}>
                 <br /><br />
                 <Col md={12}>
@@ -138,9 +141,6 @@ function WriteForm(props) {
             </Row>
         );
     }
-
-
-
     return (
         <div className="App">
             <Container>
@@ -194,7 +194,9 @@ function WriteForm(props) {
                     />
                 )}
                 {(subCategory === "emergencyJob" && targetCategory === "tradeBoard") && <JobForm csrfToken={csrfToken}/>}
-                {(subCategory === "common" && targetCategory === "commonBoard") && <CommonForm />}
+                {(subCategory === "common" && targetCategory === "commonBoard") && <CommonForm status="GENERAL" />}
+                {(subCategory === "notice" && targetCategory === "commonBoard") && <NoticeForm status="NOTICE" />}
+                {(subCategory === "advertise" && targetCategory === "commonBoard") && <AdForm status="AD" />}
                 <br />
             </Container>
         </div>

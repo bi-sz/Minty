@@ -74,7 +74,7 @@
 <div layout:fragment="content">
   <div class="container2">
 
-    <h1>커뮤니티 게시판</h1><button>글쓱;ㅣ</button>
+    <h1>커뮤니티 게시판</h1><button>글쓰기</button>
 
     <table>
       <thead>
@@ -90,7 +90,26 @@
       <tbody>
       <tr th:each="community : ${communities}" th:unless="${#lists.isEmpty(communities)}">
         <td th:text="${community.id}"></td>
-        <td><a th:href="@{'/communityDetail/' + ${community.id}}" th:text="${community.title}"></a></td>
+        <td>
+          <a th:href="@{'/communityDetail/' + ${community.id}}">
+            <span>
+                <script th:inline="javascript">
+                    /*<![CDATA[*/
+                    var statusText = '';
+                    if ([[${community.status}]] === 'GENERAL') {
+                        statusText = '일반';
+                    } else if ([[${community.status}]] === 'NOTICE') {
+                        statusText = '공지';
+                    } else if ([[${community.status}]] === 'AD') {
+                        statusText = '광고';
+                    }
+                    document.write('[' + statusText + '] ');
+                    /*]]>*/
+                </script>
+                <span th:text="${community.title}"></span>
+            </span>
+          </a>
+        </td>
         <td th:text="${community.user.nickName}"></td>
         <td th:text="${community.createdDate}"></td>
         <td th:text="${community.visitCount}"></td>

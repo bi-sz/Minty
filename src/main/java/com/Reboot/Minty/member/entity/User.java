@@ -9,7 +9,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDate;
 
-
 @Table(name = "user")
 @Builder
 @AllArgsConstructor
@@ -47,6 +46,9 @@ public class User {
     @Column(nullable = false, name = "gender")
     private String gender;
 
+    @Column
+    private String image;
+
     // 레벨, 경험치, 잔액 추가
     @Column(nullable = false, name = "level")
     private int level;
@@ -58,7 +60,6 @@ public class User {
     private int point;
     @Column
     private LocalDate withdrawalDate;
-
     public User(String name, String email, String ageRange, String mobile, String gender) {
         this.name = name;
         this.email = email;
@@ -83,7 +84,6 @@ public class User {
         user.setPoint(0);
         return user;
     }
-
     public void setWithdrawalDateToNow() {
         withdrawalDate = LocalDate.now();
     }

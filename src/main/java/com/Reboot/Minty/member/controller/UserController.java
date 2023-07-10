@@ -2,15 +2,21 @@ package com.Reboot.Minty.member.controller;
 
 import com.Reboot.Minty.member.dto.*;
 import com.Reboot.Minty.member.entity.User;
+import com.Reboot.Minty.member.repository.UserLocationRepository;
 import com.Reboot.Minty.member.repository.UserRepository;
 import com.Reboot.Minty.member.service.JoinFormValidator;
 import com.Reboot.Minty.member.service.SmsService;
 import com.Reboot.Minty.member.service.UserService;
+import com.Reboot.Minty.support.entity.Ad;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.google.cloud.storage.BlobInfo;
+import com.google.cloud.storage.Storage;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -24,8 +30,10 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import reactor.core.publisher.Mono;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
 import java.security.InvalidKeyException;
@@ -34,6 +42,7 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 @Controller
 public class UserController {
@@ -43,24 +52,29 @@ public class UserController {
     private final PasswordEncoder passwordEncoder;
 
     private final SmsService smsService;
-
     private final UserRepository userRepository;
     private final JoinFormValidator joinFormValidator;
+    private final UserLocationRepository userLocationRepository;
 
+    @Autowired
+    private Storage storage;
 
-    public UserController(UserService userService, PasswordEncoder passwordEncoder, SmsService smsService, UserRepository userRepository, JoinFormValidator joinFormValidator) {
+    public UserController(UserService userService, PasswordEncoder passwordEncoder, SmsService smsService, UserRepository userRepository, JoinFormValidator joinFormValidator, UserLocationRepository userLocationRepository) {
         this.userService = userService;
         this.passwordEncoder = passwordEncoder;
         this.smsService = smsService;
         this.userRepository = userRepository;
         this.joinFormValidator = joinFormValidator;
+        this.userLocationRepository = userLocationRepository;
     }
+
+    @Value("${spring.cloud.gcp.storage.credentials.bucket}")
+    private String bucketName;
 
     @GetMapping("/update")
     public String updateForm(Model model, HttpSession session) {
         JoinDto joinDto = (JoinDto) session.getAttribute("joinDto");
         session.removeAttribute("joinDto");
-
         if (joinDto != null) {
             String mobile = joinDto.getMobile();
             if (mobile != null) {
@@ -114,13 +128,11 @@ public class UserController {
     public String joinSubmit(@Valid JoinDto joinDto, BindingResult bindingResult, Model model, HttpSession session, Errors errors) {
         if (bindingResult.hasErrors()) {
             model.addAttribute("JoinDto", joinDto);
-            model.addAttribute("readOnly", true);
             return "member/join";
         }
         joinFormValidator.validate(joinDto, errors);
         if (errors.hasErrors()) {
             model.addAttribute("JoinDto", joinDto);
-            model.addAttribute("readOnly", true);
             return "member/join";
         }
         try {
@@ -130,18 +142,32 @@ public class UserController {
         } catch (IllegalStateException e) {
             model.addAttribute("JoinDto", joinDto);
             model.addAttribute("errorMessage", e.getMessage());
-            model.addAttribute("readOnly", true);
             return "member/join";
         }
     }
 
+    @Value("${kaKao-jsKey}")
+    private String kaKaoKey;
 
     @GetMapping("/map")
-    public String getMap(HttpSession session) {
-        User user = (User)session.getAttribute("user");
-        session.setAttribute("user",user);
-        return "map/map";
+    public String getMap(HttpSession session, Model model) {
+        try {
+            User user = userRepository.findById((Long) session.getAttribute("userId"))
+                    .orElseThrow(EntityNotFoundException::new);
+            long count = userLocationRepository.countByUserId(user.getId());
+            if (count >= 3) {
+                throw new IllegalStateException("유저 지역 정보는 최대 3개까지만 가능합니다.");
+            }
+            session.setAttribute("user", user);
+            model.addAttribute("kaKaoKey", kaKaoKey);
+            return "map/map";
+        } catch (IllegalStateException e) {
+            model.addAttribute("errorMessage", e.getMessage());
+            return "map/map";
+        }
     }
+
+
 
 
     @PostMapping("/saveLocation")
@@ -165,9 +191,17 @@ public class UserController {
 
     @GetMapping("/api/isLoggedIn")
     @ResponseBody
-    public boolean isLoggedIn(HttpServletRequest request) {
+    public Map<String,Object> isLoggedIn(HttpServletRequest request) {
+        Map<String, Object> response = new HashMap<>();
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        return authentication.isAuthenticated() ? true : false;
+        boolean LoggedIn = authentication.isAuthenticated() ? true : false;
+        response.put("LoggedIn", LoggedIn);
+        if(LoggedIn){
+            HttpSession session = request.getSession();
+            String userRole = (String)session.getAttribute("userRole");
+            response.put("userRole",userRole);
+        }
+        return response;
     }
 
     @PostMapping("/sms/send")
@@ -250,13 +284,28 @@ public class UserController {
     }
 
     @PostMapping("/edit")
-    public String editMember(@Valid @ModelAttribute UpdateDto updateDto, BindingResult bindingResult, HttpSession session, Model model) {
+    public String editMember(@Valid @ModelAttribute UpdateDto updateDto, BindingResult bindingResult, HttpSession session, Model model, @RequestParam("imageFile") MultipartFile imageFile) {
+        Long userId = (Long) session.getAttribute("userId");
+        User user = userService.getUserById(userId);
+        if (!imageFile.isEmpty()) {
+            try {
+                String uuid = UUID.randomUUID().toString();
+                BlobInfo blobInfo = storage.create(
+                        BlobInfo.newBuilder(bucketName, uuid)
+                                .setContentType("image/jpg")
+                                .build(),
+                        imageFile.getInputStream()
+                );
+                user.setImage(uuid);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        userService.saveUser(user);
+
         if (bindingResult.hasErrors()) {
             return "member/edit";
         }
-
-        Long userId = (Long) session.getAttribute("userId");
-        User user = userService.getUserById(userId);
 
         if (user != null) {
             try {

@@ -1474,7 +1474,8 @@ background-image: linear-gradient(315deg, #4dccc6 0%, #96e4df 74%);
     <div class="profile-area">
       <!-- 프로필 영역 내용 -->
       <div class="profile">
-        <img src="/image/manager.PNG" alt="프로필 사진">
+        <img th:if="${user.image}" th:src="@{'https://storage.cloud.google.com/reboot-minty-storage/' + ${user.image}}" alt="User Image" />
+        <img th:unless="${user.image}" src="/image/manager.PNG" alt="Profile Picture" />
         <div class="info">
           <div class="ratings">
             <img src="/image/myPage/score.PNG" alt="평점 이미지">
@@ -1541,23 +1542,23 @@ background-image: linear-gradient(315deg, #4dccc6 0%, #96e4df 74%);
           <h2></h2>
         </div>
 
-<!--        <div class="frame" >-->
-<!--          <button class="custom-btn btn-1">첫판매성공</button>-->
-<!--          <button class="custom-btn btn-2">첫구매성공</button>-->
-<!--          <button class="custom-btn btn-3"><span>연락이빨라요</span></button>-->
-<!--          <button class="custom-btn btn-4"><span>무료나눔천사</span></button>-->
-<!--          <button class="custom-btn btn-5"><span>100일출석</span></button>-->
-<!--          <button class="custom-btn btn-6"><span>200일출석</span></button>-->
-<!--          <button class="custom-btn btn-7"><span>300일출석</span></button>-->
-<!--          <button class="custom-btn btn-8"><span>에누리의제왕</span></button>-->
-<!--          <button class="custom-btn btn-9">판매10번</button>-->
-<!--          <button class="custom-btn btn-10">구매10번</button>-->
-<!--          <button class="custom-btn btn-11">VIP<div class="dot"></div></button>-->
-<!--          <button class="custom-btn btn-12"><span>중고거래</span><span>마스터</span></button>-->
-<!--          <button class="custom-btn btn-13">민티</button>-->
-<!--          <button class="custom-btn btn-14">구매100번</button>-->
-<!--          <button class="custom-btn btn-15">판매100번</button>-->
-<!--        </div>-->
+        <!--        <div class="frame" >-->
+        <!--          <button class="custom-btn btn-1">첫판매성공</button>-->
+        <!--          <button class="custom-btn btn-2">첫구매성공</button>-->
+        <!--          <button class="custom-btn btn-3"><span>연락이빨라요</span></button>-->
+        <!--          <button class="custom-btn btn-4"><span>무료나눔천사</span></button>-->
+        <!--          <button class="custom-btn btn-5"><span>100일출석</span></button>-->
+        <!--          <button class="custom-btn btn-6"><span>200일출석</span></button>-->
+        <!--          <button class="custom-btn btn-7"><span>300일출석</span></button>-->
+        <!--          <button class="custom-btn btn-8"><span>에누리의제왕</span></button>-->
+        <!--          <button class="custom-btn btn-9">판매10번</button>-->
+        <!--          <button class="custom-btn btn-10">구매10번</button>-->
+        <!--          <button class="custom-btn btn-11">VIP<div class="dot"></div></button>-->
+        <!--          <button class="custom-btn btn-12"><span>중고거래</span><span>마스터</span></button>-->
+        <!--          <button class="custom-btn btn-13">민티</button>-->
+        <!--          <button class="custom-btn btn-14">구매100번</button>-->
+        <!--          <button class="custom-btn btn-15">판매100번</button>-->
+        <!--        </div>-->
 
       </div>
     </div>
@@ -1625,48 +1626,55 @@ background-image: linear-gradient(315deg, #4dccc6 0%, #96e4df 74%);
 
 
   <script type="text/javascript" th:src="@{/js/userShop.js}"></script>
-  <script>
-<!-- 후기 -->
+  <script><!-- 후기 -->
 window.onload = function() {
-  const reviewContainers = document.getElementsByClassName('review');
-  for (let i = 0; i < reviewContainers.length; i++) {
-    const reviewContainer = reviewContainers[i];
-    const reviewContentContainer = reviewContainer.querySelector('.review_content_container');
-    const reviewContent = reviewContainer.querySelector('.review_content');
-    const showMoreButton = reviewContainer.querySelector('.show-more-button');
-    const collapseButton = reviewContainer.querySelector('.collapse-button');
+  setTimeout(function() {
+    const reviewContainers = document.getElementsByClassName('review');
+    console.log('Number of review containers:', reviewContainers.length);
 
-    const lineHeight = parseInt(window.getComputedStyle(reviewContent).lineHeight);
-    const lineClamp = parseInt(window.getComputedStyle(reviewContent).webkitLineClamp);
-    const contentHeight = lineHeight * lineClamp;
+    for (let i = 0; i < reviewContainers.length; i++) {
+      const reviewContainer = reviewContainers[i];
+      const reviewContentContainer = reviewContainer.querySelector('.review_content_container');
+      const reviewContent = reviewContainer.querySelector('.review_content');
+      const showMoreButton = reviewContainer.querySelector('.show-more-button');
+      const collapseButton = reviewContainer.querySelector('.collapse-button');
 
-    console.log('Offset height:', reviewContent.offsetHeight);
-    console.log('Content height:', contentHeight);
-    console.log('Scroll height:', reviewContent.scrollHeight);
+      const lineHeight = parseInt(window.getComputedStyle(reviewContent).lineHeight);
+      const lineClamp = parseInt(window.getComputedStyle(reviewContent).webkitLineClamp);
+      const contentHeight = lineHeight * lineClamp;
 
-    // Hide the "더 보기" button if the content height is less than the calculated height or if content has ellipsis
-    if (reviewContent.scrollHeight > reviewContent.offsetHeight) {
-      showMoreButton.style.display = 'flex';
-    } else {
-      showMoreButton.style.display = 'none';
+      console.log('Offset height:', reviewContent.offsetHeight);
+      console.log('Content height:', contentHeight);
+      console.log('Scroll height:', reviewContent.scrollHeight);
+
+      // Hide the "더 보기" button if the content height is less than the calculated height or if content has ellipsis
+      if (reviewContent.scrollHeight > reviewContent.offsetHeight) {
+        showMoreButton.style.display = 'flex';
+        console.log('Show more button displayed');
+      } else {
+        showMoreButton.style.display = 'none';
+        console.log('Show more button hidden');
+      }
+
+      showMoreButton.addEventListener('click', () => {
+        console.log('Show more button clicked');
+
+        if (reviewContainer.classList.contains('expanded')) {
+          reviewContent.style.webkitLineClamp = '5';
+          showMoreButton.textContent = '더 보기';
+          reviewContainer.classList.remove('expanded');
+          showMoreButton.style.top = '85px'; // Adjust the top position when content is collapsed
+        } else {
+          reviewContent.style.webkitLineClamp = 'initial';
+          reviewContentContainer.style.height = 'auto';
+          showMoreButton.textContent = '접기';
+          reviewContainer.classList.add('expanded');
+          const contentHeight = reviewContentContainer.offsetHeight;
+          showMoreButton.style.top = contentHeight + 200 + 'px'; // Adjust the top position when content is expanded
+        }
+      });
     }
-
-    showMoreButton.addEventListener('click', () => {
-  if (reviewContainer.classList.contains('expanded')) {
-    reviewContent.style.webkitLineClamp = '5';
-    showMoreButton.textContent = '더 보기';
-    reviewContainer.classList.remove('expanded');
-    showMoreButton.style.top = '85px'; // Adjust the top position when content is collapsed
-  } else {
-    reviewContent.style.webkitLineClamp = 'initial';
-    reviewContentContainer.style.height = 'auto';
-    showMoreButton.textContent = '접기';
-    reviewContainer.classList.add('expanded');
-    const contentHeight = reviewContentContainer.offsetHeight;
-    showMoreButton.style.top = contentHeight + 200 + 'px'; // Adjust the top position when content is expanded
-  }
-});
-  }
+  }, 500);
 };
 </script>
 </div>
