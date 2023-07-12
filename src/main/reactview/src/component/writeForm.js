@@ -3,11 +3,11 @@ import { useEffect, useState, useRef } from "react";
 import { useLocation } from 'react-router-dom';
 import axios from 'axios';
 import CommonForm from './commonForm';
-import AdForm from './adForm';
-import NoticeForm from './noticeForm';
 import TradeForm from './tradeForm';
 import JobForm from './jobForm';
 import '../css/writeForm.css';
+import AdForm from './adForm';
+import NoticeForm from './noticeForm';
 
 function WriteForm(props) {
     const [targetCategory, setTargetCategory] = useState('tradeBoard');
@@ -20,12 +20,13 @@ function WriteForm(props) {
     const [tradeBoard, setTradeBoard] = useState(null);
     const [imageList, setImageList] = useState([]);
     const [state, setState] = useState({});
+    const [addressCode, setAddressCode] = useState([]);
+    const [userLocationList, setUserLocationList] = useState([]);
+    const [userRole, setUserRole] = useState('');
 
-     const location = useLocation();
+    const location = useLocation();
     useEffect(() => {
      if (location.state) {
-        console.log(location.state);
-        console.log(JSON.stringify(location.state));
           const temp = location.state.tradeBoard;
           setTargetCategory("tradeBoard");
           setTradeBoard(temp);
@@ -38,20 +39,30 @@ function WriteForm(props) {
         }
     }, [location.state]);
 
-
     const fetchData = () => {
         axios.get(`/api/writeForm`).then((response) => {
             let top = [...response.data.top];
             let sub = [...response.data.sub];
+            let codes = [...response.data.addressCode];
+            let locList = [...response.data.userLocationList];
             setCsrfToken(response.data.csrfToken);
+            setUserLocationList(locList);
             setTradeTopCate(top);
             setTradeSubCate(sub);
+            setAddressCode(codes);
         })
             .catch((error) => {
                 console.error('Error fetching data:', error);
             });
     };
-
+    useEffect(() => {
+              axios.get(`/api/isLoggedIn`).then((response) => {
+                console.log("useEffect?");
+                setUserRole(response.data.userRole);
+              }).catch((e) => {
+                console.error(e);
+              });
+    }, []);
     function TradeOption() {
         return (
             <>
@@ -60,17 +71,15 @@ function WriteForm(props) {
             </>
         );
     }
-
     function CommonOption() {
-        return (
-            <>
-                <option value="common">일반게시판</option>
-                <option value="notice">공지</option>
-                <option value="advertise">광고  </option>
-            </>
-        );
+            return (
+                <>
+                    <option value="common">일반게시판</option>
+                    {userRole === 'ADMIN' ? (<option value="notice">공지</option>) : null}
+                    <option value="advertise">광고  </option>
+                </>
+            );
     }
-
     useEffect(() => {
         fetchData();
         if (targetCategory === 'tradeBoard') {
@@ -78,7 +87,6 @@ function WriteForm(props) {
         }
         else { setSubCategory('common'); }
     }, [targetCategory], [subCategory]);
-
     function TradeCategoryContainer({
         targetCategory,
         subCategory,
@@ -191,6 +199,8 @@ function WriteForm(props) {
                         csrfToken={csrfToken}
                         tradeBoard={tradeBoard}
                         imageList={imageList}
+                        addressCode={addressCode}
+                        userLocationList={userLocationList}
                     />
                 )}
                 {(subCategory === "emergencyJob" && targetCategory === "tradeBoard") && <JobForm csrfToken={csrfToken}/>}

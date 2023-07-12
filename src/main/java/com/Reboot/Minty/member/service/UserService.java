@@ -4,6 +4,7 @@ import com.Reboot.Minty.community.entity.Comments;
 import com.Reboot.Minty.manager.entity.ManagerStatistics;
 import com.Reboot.Minty.manager.repository.ManagerStatisticsRepository;
 import com.Reboot.Minty.member.constant.Role;
+import com.Reboot.Minty.member.constant.UserLocationStatus;
 import com.Reboot.Minty.member.entity.User;
 import com.Reboot.Minty.member.entity.UserLocation;
 import com.Reboot.Minty.member.repository.UserLocationRepository;
@@ -84,7 +85,8 @@ public class UserService implements UserDetailsService {
         userLocation.setLongitude(longitude);
         userLocation.setAddress(address);
         userLocation.setUser(user);
-
+        userLocation.setUserLocationStatus(UserLocationStatus.VERIFIED);
+        userLocation.setRepresentativeYN("Y");
         userLocationRepository.save(userLocation);
     }
 

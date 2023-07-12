@@ -27,6 +27,7 @@ public class ReportDto {
     private LocalDateTime createdDate;
     private LocalDateTime modifiedDate;
     private Long userId;
+    private String reportNickname;
 
     public Report toEntity(){
         return Report.builder()
@@ -37,13 +38,14 @@ public class ReportDto {
                 .nickname(nickname)
                 .userId(userId)
                 .verifyReply(verifyReply)
+                .reportNickname(reportNickname)
                 .build();
     }
 
     @Builder
     public ReportDto(Long id, String title, String content, String name, String verifyReply,
                      String nickname, LocalDateTime createdDate, LocalDateTime modifiedDate
-                     ,Long userId,List<FileDto> files) {
+                     ,Long userId,List<FileDto> files, String reportNickname) {
         this.id = id;
         this.title = title;
         this.content = content;
@@ -54,5 +56,6 @@ public class ReportDto {
         this.modifiedDate = modifiedDate;
         this.userId = userId;
         this.files =files;
+        this.reportNickname = reportNickname;
     }
 }

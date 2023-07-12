@@ -54,7 +54,7 @@ function CommonForm() {
                             onChange={(e) => setContent(e.target.value)}
                         />
                     </Form.Group>
-                    <Button as="input" type="submit" value="내셈" />
+                    <Button as="input" type="submit" value="등록" />
                 </Form>
             </Col>
         </Row>

@@ -7,7 +7,6 @@ import com.Reboot.Minty.member.repository.UserRepository;
 import com.Reboot.Minty.member.service.JoinFormValidator;
 import com.Reboot.Minty.member.service.SmsService;
 import com.Reboot.Minty.member.service.UserService;
-import com.Reboot.Minty.support.entity.Ad;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.cloud.storage.BlobInfo;
 import com.google.cloud.storage.Storage;
@@ -46,11 +45,8 @@ import java.util.UUID;
 
 @Controller
 public class UserController {
-
     private final UserService userService;
-
     private final PasswordEncoder passwordEncoder;
-
     private final SmsService smsService;
     private final UserRepository userRepository;
     private final JoinFormValidator joinFormValidator;
@@ -167,15 +163,14 @@ public class UserController {
         }
     }
 
-
-
-
     @PostMapping("/saveLocation")
     public String saveLocation(@ModelAttribute JoinLocationDto joinLocationDto, HttpSession session, CsrfToken csrfToken) {
         System.out.println("saveLocation method()");
         // Get location and address information
         String csrfTokenValue = csrfToken.getToken();
         String csrfHeaderName = csrfToken.getHeaderName();
+
+        System.out.println(joinLocationDto.getAddress());
 
         HttpHeaders headers = new HttpHeaders();
         headers.set(csrfHeaderName, csrfTokenValue);

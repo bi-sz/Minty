@@ -1,6 +1,5 @@
 package com.Reboot.Minty.gpt;
 
-import com.Reboot.Minty.member.service.UserService;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpSession;
@@ -15,6 +14,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -27,11 +27,7 @@ import java.util.stream.Collectors;
 @Controller
 public class lowestController {
     @Autowired
-    PythonExecutor pythonExecutor;
-    @Autowired
     JdbcTemplate jdbcTemplate;
-    @Autowired
-    UserService userService;
 
     @GetMapping("/priceSearch")
     public String priceSearch(){
@@ -81,7 +77,7 @@ public class lowestController {
     @GetMapping("/gpt/executePythonScript")
     @ResponseBody
     public void executePythonScript(@RequestParam("inputValue") String inputValue, HttpSession session) {
-        String pythonScriptPath = "D:/IntelliJPrac/Minty/src/main/python/test.py";
+        String pythonScriptPath = "D:/Minty-master/Minty-master/src/main/python/test.py";
 
         try {
             ProcessBuilder processBuilder = new ProcessBuilder("python", pythonScriptPath, inputValue);
@@ -109,8 +105,6 @@ public class lowestController {
             e.printStackTrace();
         }
     }
-
-
 }
 
 

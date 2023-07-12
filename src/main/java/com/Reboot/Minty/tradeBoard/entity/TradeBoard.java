@@ -38,8 +38,9 @@ public class TradeBoard {
     @Column(nullable = false)
     private String title;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 10000)
     private String content;
+
 
     @Column(name= "created_date", columnDefinition="TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private Timestamp createdDate;
@@ -62,14 +63,12 @@ public class TradeBoard {
     private SubCategory subCategory;
 
     private String thumbnail;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user", nullable = false)
     private User user;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="user_location")
-    private UserLocation userLocation;
+    @Column(nullable = false)
+    private String sellArea;
 
     @Enumerated(EnumType.STRING)
     private TradeStatus status;

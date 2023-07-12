@@ -2,9 +2,9 @@
     // 초기화 및 변수 선언 Setting
 
     // 지도 div
-	var mapContainer = document.querySelector('#map'),
+   var mapContainer = document.querySelector('#map'),
 
-	// 최초 지도 Setting
+   // 최초 지도 Setting
     mapOption = {
         center: new kakao.maps.LatLng(33.450701, 126.570667), // 지도의 중심좌표
         level: 3 // 지도의 확대 레벨
@@ -44,7 +44,7 @@ if (navigator.geolocation) {
          // 위도 경도 locPosition 담아두기
         var locPosition = new kakao.maps.LatLng(lat, lon);
         document.getElementById('latitude').value = lat;
-                document.getElementById('longitude').value = lon;
+        document.getElementById('longitude').value = lon;
         // 마커와 인포윈도우를 표시합니다
         displayMarker(locPosition);
       });
@@ -102,8 +102,3 @@ function displayCenterInfo(result, status) {
         }
     }
 }
-
-
-
-
-

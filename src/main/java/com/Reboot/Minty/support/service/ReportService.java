@@ -24,7 +24,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-
 @RequiredArgsConstructor
 @Service
 public class ReportService {
@@ -62,6 +61,7 @@ public class ReportService {
                 .name(report.getName())
                 .content(report.getContent())
                 .nickname(report.getNickname())
+                .reportNickname(report.getReportNickname())
                 .verifyReply(report.getVerifyReply())
                 .userId(report.getUserId())
                 .createdDate(report.getCreatedDate())

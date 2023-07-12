@@ -4,6 +4,9 @@ import com.Reboot.Minty.categories.dto.SubCategoryDto;
 import com.Reboot.Minty.categories.entity.SubCategory;
 import lombok.Data;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Data
 public class TradeBoardSearchDto {
     Long subCategoryId;
@@ -11,4 +14,5 @@ public class TradeBoardSearchDto {
     int maxPrice;
     String sortBy;
     String searchQuery="";
+    List<String> searchArea = new ArrayList<>();
 }

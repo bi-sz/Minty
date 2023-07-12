@@ -210,6 +210,32 @@
 .col-md-3{
 display:flex !important;
 }
-.justify-content-center{
-justify-content:none !important;
+
+
+
+
+.dark-dropdown .dropdown-menu {
+  background-color: #343a40;
 }
+
+.dropdown-item {
+    color : white;
+}
+
+
+.range-slider__wrap {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.range-slider {
+    width : 80%;
+}
+
+
+.modal-content {
+    height: 100%;
+    width: 100%;
+}
+

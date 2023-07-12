@@ -6,24 +6,26 @@ import '../css/boardDetail.css';
 import { formatDistanceToNow, parseISO } from 'date-fns';
 import { ko } from 'date-fns/locale';
 
-
 function BoardDetail({ csrfToken }) {
   let [tradeBoard, setTradeBoard] = useState({});
     const [isAuthor, setIsAuthor] = useState(false);
 
   let [imageList, setImageList] = useState([]);
   let [currentImage, setCurrentImage] = useState(0);
-
   const [nickName, setNickName] = useState('');
   const [showModal, setShowModal] = useState(false); // Modal 표시 여부 상태
-  const [popupMessage, setPopupMessage] = useState('');
-
   const { id } = useParams();
-  const navigate = useNavigate();
+
+const navigate = useNavigate();
 
    const handleEditClick = () => {
      navigate(`/writeForm/${id}`, { state: { tradeBoard, imageList } });
    };
+
+   const handleDeleteClick = () => {
+
+   }
+
 
 const fetchData = () => {
   axios
@@ -41,15 +43,8 @@ const fetchData = () => {
       }
     })
     .catch((error) => {
-      if (error.response && error.response.status) {
-        const statusCode = error.response.status;
-        if (statusCode === 403) {
-          alert(error.response.data);
-        } else if (statusCode === 404) {
-          alert(error.response.data);
-        } else {
-          alert(error.response.data);
-        }
+      if (error.response && error.response.data && error.response.data.error) {
+        alert(error.response.data.error);
       } else {
         console.log(error);
         alert("error");
@@ -57,7 +52,6 @@ const fetchData = () => {
       window.history.back(); // 이전 페이지로 이동
     });
 };
-
 
 
   useEffect(() => {
@@ -78,65 +72,28 @@ const fetchData = () => {
     setShowModal(false);
   };
 
-  const incrementInterestingCount = () => {
+  const chatRoom = () => {
       axios
-        .post(`/api/incrementInterestingCount/${id}`, tradeBoard.id,{
+        .post('/chatRoom', tradeBoard.id, {
           headers: {
             'Content-Type': 'application/json',
             'X-CSRF-TOKEN': csrfToken,
           },
         })
         .then((response) => {
-          // Set the popup message
-          alert('관심상품에 등록되었습니다.');
-          console.log('카운트 증가됨:', response.data);
+            window.location.href = window.location.origin + '/getchatting';
         })
         .catch((error) => {
-          console.log(error);
-          alert('카운트 증가 오류');
-        });
+             if (error.response && error.response.status === 400) {
+                      alert("이미 존재하는 구매 요청입니다.");
+                      window.location.href = error.response.data;
+             } else {
+               // Other errors - Show generic error message in alert
+               console.log(error);
+               alert('An error occurred.');
+             }
+           });
     };
-
-  const chatRoom = () => {
-        axios
-          .post('/chatRoom', tradeBoard.id, {
-            headers: {
-              'Content-Type': 'application/json',
-              'X-CSRF-TOKEN': csrfToken,
-            },
-          })
-          .then((response) => {
-              window.location.href = window.location.origin + '/getchatting';
-          })
-          .catch((error) => {
-               if (error.response && error.response.status === 400) {
-                        alert("이미 존재하는 구매 요청입니다.");
-                        window.location.href = error.response.data;
-               } else {
-                 // Other errors - Show generic error message in alert
-                 console.log(error);
-                 alert('An error occurred.');
-               }
-             });
-      };
-
- const handleDeleteClick = () => {
-   axios
-          .post('/api/tradeBoard/deleteRequest', tradeBoard.id, {
-            headers: {
-              'Content-Type': 'application/json',
-              'X-CSRF-TOKEN': csrfToken,
-            },
-          }).then((response)=> {
-              alert('삭제 처리 되었습니다.');
-              window.location.href = "/boardList/";
-          })
-           .catch((error) => {
-                  console.log(error);
-                  alert(error);
-                })
-          };
-
 
   return (
     <Container>
@@ -155,7 +112,8 @@ const fetchData = () => {
                   src={`https://storage.cloud.google.com/reboot-minty-storage/${img.imgUrl}`}
                   alt="Board Image"
                   className="board-img"
-                  onClick={() => handleImageClick(index)} // 이미지 클릭 이벤트 처리
+                  onClick={() => handleImageClick(index)}
+                  // 이미지 클릭 이벤트 처리
                 />
               </Carousel.Item>
             ))}
@@ -173,8 +131,8 @@ const fetchData = () => {
             <span>{timeAgo}</span>
           </Col>
           <Col className="button-groups">
-            {!isAuthor &&<Button variant="primary" onClick={incrementInterestingCount}>찜하기</Button>}
-            {!isAuthor &&<Button variant="secondary" onClick={chatRoom}>채팅</Button>}
+            {!isAuthor && <Button variant="primary">찜하기</Button>}
+             {!isAuthor && tradeBoard.tradeStatus == "SELL" && <Button variant="secondary" onClick={chatRoom}>채팅</Button>}
                   {/*{!isAuthor &&<Button variant="success" onClick={purchasingReq}>*/}
            {/*  구매 신청*/}
            {/*</Button>}*/}

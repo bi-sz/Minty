@@ -64,7 +64,7 @@ try:
         chrome_options = Options()
         chrome_options.add_argument("--headless")
 
-        chromedriver_path = 'D:/gpt/chromedriver.exe'
+        chromedriver_path = 'D:/gpt/chromedriver'
 
         driver = webdriver.Chrome(options=chrome_options)
         url = 'https://shopping.naver.com/home'

@@ -1,18 +1,18 @@
 package com.Reboot.Minty.tradeBoard.repository;
 
-import com.Reboot.Minty.categories.dto.SubCategoryDto;
 import com.Reboot.Minty.tradeBoard.constant.TradeStatus;
 import com.Reboot.Minty.tradeBoard.dto.TradeBoardDto;
 import com.Reboot.Minty.tradeBoard.dto.TradeBoardSearchDto;
 import com.Reboot.Minty.tradeBoard.entity.QTradeBoard;
-import com.Reboot.Minty.utils.OrderByNull;
 import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
-import org.springframework.data.domain.*;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.SliceImpl;
 import org.springframework.stereotype.Repository;
 import org.thymeleaf.util.StringUtils;
 
@@ -36,8 +36,7 @@ public class TradeBoardCustomRepository {
                 return QTradeBoard.tradeBoard.user.nickName.like("%" + nickNameQuery + "%");
             } else {
                 return QTradeBoard.tradeBoard.title.like("%" + searchQuery + "%")
-                        .or(QTradeBoard.tradeBoard.userLocation.address.like("%" + searchQuery + "%"))
-                        .or(QTradeBoard.tradeBoard.user.nickName.like("%" + searchQuery + "%"));
+                        .or(QTradeBoard.tradeBoard.content.like("%" + searchQuery + "%"));
             }
         }
         return null;
@@ -60,6 +59,13 @@ public class TradeBoardCustomRepository {
         return new OrderSpecifier<>(order, QTradeBoard.tradeBoard.modifiedDate);
     }
 
+    private BooleanExpression searchByArea(List<String> searchAreaList) {
+        if (searchAreaList != null && !searchAreaList.isEmpty()) {
+            return QTradeBoard.tradeBoard.sellArea.in(searchAreaList);
+        }
+        return null;
+    }
+
     private BooleanExpression searchByCategory(Long subCategoryId) {
         if (subCategoryId != null) {
             return QTradeBoard.tradeBoard.subCategory.id.eq(subCategoryId);
@@ -77,6 +83,8 @@ public class TradeBoardCustomRepository {
         }
         return null;
     }
+
+
 
     public Slice<TradeBoardDto> getTradeBoardBy(TradeBoardSearchDto searchDto, Pageable pageable) {
         QTradeBoard qtb = QTradeBoard.tradeBoard;
@@ -100,6 +108,12 @@ public class TradeBoardCustomRepository {
         if (priceExpression != null) {
             searchExpression = searchExpression.and(priceExpression);
         }
+
+        BooleanExpression areaExpression = searchByArea(searchDto.getSearchArea());
+        if(areaExpression != null){
+            searchExpression = searchExpression.and(areaExpression);
+        }
+
         System.out.println(searchExpression);
 
         // Add sorting
@@ -110,7 +124,7 @@ public class TradeBoardCustomRepository {
                         qtb.id, qtb.price, qtb.title, qtb.createdDate, qtb.modifiedDate, qtb.interesting, qtb.visit_count, qtb.thumbnail,
                         qtb.topCategory.id, qtb.topCategory.name, qtb.subCategory.id, qtb.subCategory.name,
                         qtb.user.id, qtb.user.email, qtb.user.nickName,
-                        qtb.userLocation.id, qtb.userLocation.address,
+                        qtb.sellArea,
                         qtb.status))
                 .from(qtb)
                 .where(searchExpression)

@@ -2,6 +2,7 @@ package com.Reboot.Minty.tradeBoard.service;
 
 import com.Reboot.Minty.config.ResizeFile;
 import com.Reboot.Minty.member.dto.UserLocationResponseDto;
+import com.Reboot.Minty.member.dto.UserResponseDto;
 import com.Reboot.Minty.member.entity.User;
 import com.Reboot.Minty.member.entity.UserLocation;
 import com.Reboot.Minty.member.repository.UserLocationRepository;
@@ -10,7 +11,6 @@ import com.Reboot.Minty.tradeBoard.constant.TradeStatus;
 import com.Reboot.Minty.tradeBoard.dto.*;
 import com.Reboot.Minty.tradeBoard.entity.TradeBoard;
 import com.Reboot.Minty.tradeBoard.entity.TradeBoardImg;
-//import com.Reboot.Minty.tradeBoard.repository.TradeBoardCustomRepository;
 import com.Reboot.Minty.tradeBoard.repository.TradeBoardCustomRepository;
 import com.Reboot.Minty.tradeBoard.repository.TradeBoardImgRepository;
 import com.Reboot.Minty.tradeBoard.repository.TradeBoardRepository;
@@ -27,8 +27,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.*;
+import java.io.IOException;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -96,11 +97,9 @@ public class TradeBoardService {
         String uuid = UUID.randomUUID().toString();
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalStateException("User not found"));
-        UserLocation userLocation = userLocationRepository.findByUserId(user.getId());
         TradeBoard tradeBoard = tradeBoardFormDto.toEntity(tradeBoardFormDto);
         tradeBoard.setStatus(TradeStatus.SELL);
         tradeBoard.setUser(user);
-        tradeBoard.setUserLocation(userLocation);
         MultipartFile firstFile = mf.get(0);
         String thumbnail = uuid;
         tradeBoard.setThumbnail(thumbnail);
@@ -179,7 +178,6 @@ public class TradeBoardService {
             tradeBoard.setThumbnail(uuid);
             tradeBoard.setUser(user);
             tradeBoard.setModifiedDate(new Timestamp(System.currentTimeMillis()));
-            tradeBoard.setUserLocation(userLocation);
             tradeBoardRepository.save(tradeBoard);
 
             // 이미지 리스트 기존 파일 삭제, DB 삭제
@@ -220,7 +218,6 @@ public class TradeBoardService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalStateException("User not found"));
         TradeBoard tradeBoard =  tradeBoardRepository.findById(boardId).orElseThrow(EntityNotFoundException::new);
-        UserLocation userLocation = userLocationRepository.findByUserId(userId);
         tradeBoardFormDto.updateEntity(tradeBoard);
         // 순서 바뀌었을 때
         if(firstFile!=tradeBoard.getThumbnail()){
@@ -230,7 +227,6 @@ public class TradeBoardService {
             tradeBoard.setThumbnail(imageUrls.get(0));
         }
         tradeBoard.setUser(user);
-        tradeBoard.setUserLocation(userLocation);
         tradeBoard.setModifiedDate(new Timestamp(System.currentTimeMillis()));
         tradeBoardRepository.save(tradeBoard);
 
@@ -265,7 +261,30 @@ public class TradeBoardService {
 
     public List<UserLocationResponseDto> getLogginedLocationList(Long userId){
         List<UserLocation> userLocations = userLocationRepository.findAllByUserId(userId);
+        UserResponseDto userResponseDto = UserResponseDto.of(userRepository.findById(userId).orElseThrow(EntityNotFoundException::new));
         List<UserLocationResponseDto> response = userLocations.stream().map(UserLocationResponseDto::of).collect(Collectors.toList());
+        for(UserLocationResponseDto r : response){
+            System.out.println(r.getLatitude().getClass().getSimpleName());
+            r.setUserId(userResponseDto);
+        }
         return response;
     }
+    public List<TradeBoardDto> getTradeBoardListByUser(Long userId) {
+        List<TradeBoard> tradeBoards = tradeBoardRepository.findByUserId(userId);
+
+        List<TradeBoardDto> tradeBoardDtos = new ArrayList<>();
+        for (TradeBoard tradeBoard : tradeBoards) {
+            TradeBoardDto tradeBoardDto = new TradeBoardDto();
+            tradeBoardDto.setTitle(tradeBoard.getTitle());
+            tradeBoardDto.setPrice(tradeBoard.getPrice());
+            tradeBoardDto.setThumbnail(tradeBoard.getThumbnail());
+            tradeBoardDto.setCreatedDate(tradeBoard.getCreatedDate());
+
+            tradeBoardDtos.add(tradeBoardDto);
+        }
+
+        return tradeBoardDtos;
+    }
+
+
 }

@@ -40,11 +40,14 @@ public class Report extends BaseEntity {
     private List<File> files = new ArrayList<>();
 
     @Column
+    private String reportNickname;
+
+    @Column
     private Long userId;
 
     @Builder
     public Report(Long id, String title, String name, String content, String verifyReply, String nickname
-            , Long userId){
+            , Long userId, String reportNickname){
         this.id = id;
         this.title = title;
         this.name = name;
@@ -52,6 +55,7 @@ public class Report extends BaseEntity {
         this.verifyReply = verifyReply;
         this.nickname = nickname;
         this.userId = userId;
+        this.reportNickname = reportNickname;
     }
 
     public void addFile(File file) {

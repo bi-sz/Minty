@@ -74,7 +74,7 @@
 <div layout:fragment="content">
   <div class="container2">
 
-    <h1>커뮤니티 게시판</h1><button>글쓰기</button>
+    <h1>커뮤니티 게시판</h1><button type="button"><a href="/writeForm">글쓰기</a></button>
 
     <table>
       <thead>
@@ -111,7 +111,7 @@
           </a>
         </td>
         <td th:text="${community.user.nickName}"></td>
-        <td th:text="${community.createdDate}"></td>
+        <td th:text="${T(com.Reboot.Minty.community.time.DateUtils).formatTimestamp(community.createdDate)}"></td>
         <td th:text="${community.visitCount}"></td>
         <td th:text="${community.interesting}"></td>
       </tr>
