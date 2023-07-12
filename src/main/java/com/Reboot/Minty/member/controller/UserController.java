@@ -133,6 +133,13 @@ public class UserController {
         }
         try {
             User user = User.saveUser(joinDto, passwordEncoder);
+
+            if(joinDto.getGender().equals("female")){
+                user.setImage("aaaa.png");
+            } else {
+                user.setImage("aaa.png");
+            }
+
             User savedUser = userService.saveUser(user);
             return "redirect:/login";
         } catch (IllegalStateException e) {

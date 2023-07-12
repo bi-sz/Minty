@@ -148,7 +148,6 @@ function toggleLike(likeButton) {
     <div class="row align-items-center">
       <div class="col-auto">
         <img class="profileImg" th:if="${writer.image}" th:src="@{'https://storage.cloud.google.com/reboot-minty-storage/' + ${writer.image}}" alt="writer Image" />
-        <img class="profileImg" th:unless="${writer.image}" src="/image/manager.PNG" alt="Profile Picture"/>
       </div>
       <div class="col">
         <h3><span class="writer" th:text="'작성자 : ' + ${writer.nickName}"></span></h3>
@@ -166,7 +165,6 @@ function toggleLike(likeButton) {
     <div class="row align-items-center">
       <div class="col-auto">
         <img class="profileImg" th:if="${writer.image}" th:src="@{'https://storage.cloud.google.com/reboot-minty-storage/' + ${writer.image}}" alt="user Image" />
-        <img class="profileImg" th:unless="${writer.image}" src="/image/manager.PNG" alt="Profile Picture"/>
       </div>
       <div class="col">
         <a th:href="@{/usershop/{userId}(userId=${user.id})}" style="text-decoration: none;">
@@ -191,7 +189,6 @@ function toggleLike(likeButton) {
               <div class="comment-content-horizontal">
                 <div class="comment-image">
                   <img class="profileImg" th:if="${comment.user.image}" th:src="@{'https://storage.cloud.google.com/reboot-minty-storage/' + ${comment.user.image}}" alt="user Image" onclick="toggleLike()"/>
-                  <img class="profileImg" th:unless="${comment.user.image}" src="/image/manager.PNG" alt="Profile Picture"/>
                 </div>
                 <div class="comment-details">
                   <div classclassclass="comment-info">

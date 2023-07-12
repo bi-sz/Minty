@@ -158,8 +158,9 @@ function fetchAll() {
             if (userId==users[i]['other']){
 
                 usersTemplateHTML = usersTemplateHTML +
-                    '<a class="list-group-item list-group-item-action-a" id="child_message" onclick="formMessageLauch(\'' + users[i]['my'] + '\', \'' + users[i]['myNickName'] + '\', \'user\', \'' + users[i]['title'] + '\', \'' + users[i]['content'] + '\', \'' + users[i]['price'] + '\', \'' + users[i]['thumbnail'] + '\')" data-userid="' + users[i]['myNickName'] + '" data-type="user" data-thumbnail="' + users[i]['thumbnail'] + '" data-title="' + users[i]['title'] + '" data-content="' + users[i]['content'] + '" data-price="' + users[i]['price'] + '">' +
-                    '<img src="https://via.placeholder.com/50" alt="User Image" width="50px" height="50px">'+
+                    '<a class="list-group-item list-group-item-action-a" id="child_message" onclick="formMessageLauch(\'' + users[i]['my'] + '\', \'' + users[i]['myNickName'] + '\', \'user\', \'' + users[i]['title'] + '\', \'' + users[i]['content'] + '\', \'' + users[i]['price'] + '\', \'' + users[i]['thumbnail'] + '\', \'' + users[i]['myProfileImage'] + '\')" data-userid="' + users[i]['myNickName'] + '" data-type="user" data-thumbnail="' + users[i]['thumbnail'] + '" data-title="' + users[i]['title'] + '" data-content="' + users[i]['content'] + '" data-price="' + users[i]['price'] + '" data-profile="' + users[i]['myProfileImage'] + '">' +
+                    //'<img src="https://via.placeholder.com/50" alt="User Image" width="50px" height="50px" class="rounded-circle me-2">'+
+                    '<img src="https://storage.googleapis.com/reboot-minty-storage/' + users[i]['myProfileImage'] + '" alt="User Image" width="50px" height="50px" class="rounded-circle me-2">' +
                     '<div class="header" id="userNameAppender_' + users[i]['my'] + '">'+
                     '<span>'+users[i]['myNickName']+'</span>'+
                     '</div>'+
@@ -167,8 +168,9 @@ function fetchAll() {
             } else  {
 
                 usersTemplateHTML = usersTemplateHTML +
-                    '<a class="list-group-item list-group-item-action-a" id="child_message" onclick="formMessageLauch(\'' + users[i]['other'] + '\', \'' + users[i]['otherNickName'] + '\', \'user\', \'' + users[i]['title'] + '\', \'' + users[i]['content'] + '\', \'' + users[i]['price'] + '\', \'' + users[i]['thumbnail'] + '\')" data-userid="' + users[i]['otherNickName'] + '" data-type="user" data-thumbnail="' + users[i]['thumbnail'] + '" data-title="' + users[i]['title'] + '" data-content="' + users[i]['content'] + '" data-price="' + users[i]['price'] + '">' +
-                    '<img src="https://via.placeholder.com/50" alt="User Image" width="50px" height="50px">'+
+                    '<a class="list-group-item list-group-item-action-a" id="child_message" onclick="formMessageLauch(\'' + users[i]['other'] + '\', \'' + users[i]['otherNickName'] + '\', \'user\', \'' + users[i]['title'] + '\', \'' + users[i]['content'] + '\', \'' + users[i]['price'] + '\', \'' + users[i]['thumbnail'] + '\', \'' + users[i]['otherProfileImage'] + '\')" data-userid="' + users[i]['otherNickName'] + '" data-type="user" data-thumbnail="' + users[i]['thumbnail'] + '" data-title="' + users[i]['title'] + '" data-content="' + users[i]['content'] + '" data-price="' + users[i]['price'] + '" data-profile="' + users[i]['otherProfileImage'] + '">' +
+                    //'<img src="https://via.placeholder.com/50" alt="User Image" width="50px" height="50px" class="rounded-circle me-2">'+
+                    '<img src="https://storage.googleapis.com/reboot-minty-storage/' + users[i]['otherProfileImage'] + '" alt="User Image" width="50px" height="50px" class="rounded-circle me-2">' +
                     '<div class="header" id="userNameAppender_' + users[i]['other'] + '">'+
                     '<span>'+users[i]['otherNickName']+'</span>'+
                     '</div>'+
@@ -190,13 +192,14 @@ function fetchAll() {
             console.log(groups[i]['user_id'])
             groupsTemplateHTML = groupsTemplateHTML +
                 '<a class="list-group-item list-group-item-action" id="child_message" onclick="formMessageLauch('+groups[i]['user_id']+',\''+groups[i]['address']+'\',\'group\')" data-groupid="'+groups[i]['user_id']+'" data-type="group">'+
-                '<img src="/image/chat2.PNG" alt="User Image" width="50px" height="50px">'+
+                '<img src="/image/chat2.PNG" alt="User Image" width="50px" height="50px" class="rounded-circle me-2">'+
                 '<div class="user_info" id="userGroupAppender_' + modifiedAddress + '">'+
                 // '<span>'+groups[i]['address']+'</span>'+
-                '<span>'+"지역 채팅방 : "+ groups[i]['address']+ '</span>'+
+                '<span>'+"지역 채팅방 "+ "<br>" + groups[i]['address']+ '</span>'+
                 '</div>'+
                 '</a>';
         }
+
         $('#groupList').html(groupsTemplateHTML);
         $($('.list-group-item.list-group-item-action-a')[0]).click();
 
@@ -304,7 +307,7 @@ function sendMessage(type) {
 }
 
 
-function formMessageLauch(id,name,type,title,content,price,thumbnail){
+function formMessageLauch(id,name,type,title,content,price,thumbnail,profile){
 
     document.getElementById("formProductsBody").innerHTML = "";
 
@@ -324,7 +327,7 @@ function formMessageLauch(id,name,type,title,content,price,thumbnail){
     let nama1 = $('#formMessageHeader').find('span#title-content');
 
     if (type === "user") {
-    nama.html('<a href="http://localhost:8087/usershop/' + id + '"><img src="https://via.placeholder.com/50" alt="Selected User Image" class="rounded-circle me-2"></a>' + name);
+    nama.html('<a href="http://localhost:8087/usershop/' + id + '"><img src="https://storage.googleapis.com/reboot-minty-storage/' + profile + '" alt="Selected User Image" class="rounded-circle me-2" width="50px" height="50px"></a>' + name);
     nama1.html('<img src="https://storage.googleapis.com/reboot-minty-storage/' + thumbnail + '" alt="Thumbnail" class="rounded-circle user_img" width="50px" height="50px">'+'<div id="title-price"><span id="title-content-title" class="truncate">' +title+ '</span>' + '<span id="title-content-price">'+ new Intl.NumberFormat('ko-KR', { style: 'currency', currency: 'KRW' }).format(price) + '원</span></div>' );
     nama.attr("data-id",id);
 
@@ -335,7 +338,7 @@ function formMessageLauch(id,name,type,title,content,price,thumbnail){
 
     } else if ((type === "group")) {
 
-        nama.html('<a href="#"><img src="https://via.placeholder.com/50" alt="Selected User Image" class="rounded-circle me-2"></a>' + "지역 채팅방" );
+        nama.html('<a href="#"><img img src="https://storage.googleapis.com/reboot-minty-storage/' + profile + '" alt="Selected User Image" class="rounded-circle me-2"></a>' + "지역 채팅방" );
         nama.attr("data-id",name);
 
     nama1.html(name);
