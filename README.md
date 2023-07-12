@@ -25,3 +25,18 @@ React의 생명주기 메서드와 Hook 등의 개념을 이해하고 적용하�
 * Framework : Spring boot
 * Database : My SQL
 * Version Control : Git, GitHub
+
+### 🔧 실행 조건
+터미널에서 install 할 것!
+PS 경로\Minty>
+* pip install selenium
+* pip install openai
+* pip install tkinter
+* pip install pandas
+
+PS 경로\Minty>
+* cd src/main/reactview
+
+PS 경로 \Minty\src\main\reactview>
+*npm install @turf/turf
+ 
