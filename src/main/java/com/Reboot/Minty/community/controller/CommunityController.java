@@ -86,8 +86,6 @@ public class CommunityController {
             isLiked = communityLike.isCheckStatus();
         }
 
-        System.out.println(isLiked);
-
         model.addAttribute("isLiked", isLiked);
         model.addAttribute("community", community);
         model.addAttribute("status", status);

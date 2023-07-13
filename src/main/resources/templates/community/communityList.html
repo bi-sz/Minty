@@ -66,6 +66,13 @@
     .hover-no:hover{
     background : white !important;
     }
+    .container2{
+     font-family: 'font', sans-serif;
+    }
+    .hover-no{
+    border-top:1px black solid;
+    border-bottom:1px black solid;
+    }
 </style>
 
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -74,8 +81,9 @@
 <div layout:fragment="content">
   <div class="container2">
 
-    <h1>커뮤니티 게시판</h1><button type="button"><a href="/writeForm">글쓰기</a></button>
-
+    <h1>커뮤니티 게시판
+    <a style="float:right;"href="/writeForm"><button class="btn btn-primary" type="button">글쓰기</button></a>
+    </h1>
     <table>
       <thead>
       <tr class="hover-no">
@@ -88,27 +96,26 @@
       </tr>
       </thead>
       <tbody>
-      <tr th:each="community : ${communities}" th:unless="${#lists.isEmpty(communities)}">
+      <tr th:each="community : ${communities}" th:unless="${#lists.isEmpty(communities)}"
+          class="clickable-row" th:onclick="|window.location.href='/communityDetail/${community.id}'|">
         <td th:text="${community.id}"></td>
         <td>
-          <a th:href="@{'/communityDetail/' + ${community.id}}">
-            <span>
-                <script th:inline="javascript">
-                    /*<![CDATA[*/
-                    var statusText = '';
-                    if ([[${community.status}]] === 'GENERAL') {
-                        statusText = '일반';
-                    } else if ([[${community.status}]] === 'NOTICE') {
-                        statusText = '공지';
-                    } else if ([[${community.status}]] === 'AD') {
-                        statusText = '광고';
-                    }
-                    document.write('[' + statusText + '] ');
-                    /*]]>*/
-                </script>
-                <span th:text="${community.title}"></span>
-            </span>
-          </a>
+    <span>
+      <script th:inline="javascript">
+        /*<![CDATA[*/
+        var statusText = '';
+        if ([[${community.status}]] === 'GENERAL') {
+          statusText = '일반';
+        } else if ([[${community.status}]] === 'NOTICE') {
+          statusText = '공지';
+        } else if ([[${community.status}]] === 'AD') {
+          statusText = '광고';
+        }
+        document.write('[' + statusText + '] ');
+        /*]]>*/
+      </script>
+      <span th:text="${community.title}"></span>
+    </span>
         </td>
         <td th:text="${community.user.nickName}"></td>
         <td th:text="${T(com.Reboot.Minty.community.time.DateUtils).formatTimestamp(community.createdDate)}"></td>

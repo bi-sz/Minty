@@ -104,7 +104,6 @@
 .updown {
   background: rgba(0,0,0,0) !important;
   cursor: pointer;
-  margin-right:2vw;
 }
 
 .close-btn{
@@ -116,6 +115,12 @@
   border-radius:50px;
   background: #646d7696;
   color:white;
+}
+.up{
+margin-bottom:1vh;
+}
+.down{
+margin-top:1vh;
 }
   </style>
   </head>
@@ -133,10 +138,11 @@
     <div class="remote">
       <div>
         <a class="updown up"><img src="/image/up.png" alt="맨위로" /></a>
+      </div>
+      <div>
         <a class="button" th:href="@{/supportHome}">고객센터</a>
       </div>
       <div>
-        <a class="updown down"><img src="/image/down.png" alt="맨아래로" /></a>
         <a class="button" th:href="@{/writeForm}">글쓰기</a>
       </div>
       <div>
@@ -147,6 +153,9 @@
       </div>
       <div>
         <a id="minting" class="button">민팅팅</a>
+      </div>
+      <div>
+        <a class="updown down"><img src="/image/down.png" alt="맨아래로" /></a>
       </div>
     </div>
   </th:block>

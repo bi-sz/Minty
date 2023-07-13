@@ -101,6 +101,9 @@
       border-radius: 5px;
       border: 1px solid lightgray;
     }
+    #content {
+  height: 300px;
+}
   </style>
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <meta name="_csrf" th:content="${_csrf.token}"/>
@@ -138,8 +141,8 @@
       <hr />
       <div class="row">
         <div class="col">
-          <input type="submit" value="수정하기">
-          <a href="#" onclick="window.history.back();">취소하기</a>
+          <input class="btn btn-primary" type="submit" value="수정하기">
+          <a href="#" onclick="window.history.back();"><button  class="btn btn-primary">취소하기</button></a>
         </div>
       </div>
     </form>
