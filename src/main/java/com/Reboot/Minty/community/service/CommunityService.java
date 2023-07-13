@@ -18,4 +18,9 @@ public class CommunityService {
     public Community addPost(Community community) {
         return communityRepository.save(community);
     }
+
+    public void deletePost(Long id) {
+        communityRepository.deleteById(id);
+    }
+
 }

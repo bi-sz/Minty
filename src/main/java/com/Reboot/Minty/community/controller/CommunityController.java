@@ -21,6 +21,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.Optional;
 
@@ -139,6 +140,42 @@ public class CommunityController {
 
         return "redirect:/communityDetail/" + community.getId();
     }
+
+    @GetMapping("/editPost/{postId}")
+    public String showEditForm(@PathVariable("postId") Long id, Model model,HttpServletRequest request) {
+        HttpSession session = request.getSession();
+        Long userId = (Long) session.getAttribute("userId");
+        User user = userRepository.findById(userId).orElseThrow(EntityNotFoundException::new);
+
+        Community community = communityRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+
+        User writer = community.getUser();
+
+        model.addAttribute("community", community);
+        model.addAttribute("writer", writer);
+        return "/community/editPost";
+    }
+
+    @PostMapping("/editPost/{postId}")
+    public String editPost(@PathVariable("postId") Long postId, @ModelAttribute("community") Community updatedCommunity) {
+        Community existingCommunity = communityRepository.findById(postId).orElseThrow(EntityNotFoundException::new);
+
+        // 수정된 정보 업데이트
+        existingCommunity.setTitle(updatedCommunity.getTitle());
+        existingCommunity.setContent(updatedCommunity.getContent());
+        existingCommunity.setModifiedDate(new Timestamp(System.currentTimeMillis()));
+
+        communityRepository.save(existingCommunity); // 수정된 커뮤니티 저장
+
+        return "redirect:/communityDetail/" + postId;
+    }
+
+    @PostMapping("/deletePost/{postId}")
+    public String deletePost(@PathVariable("postId") Long id) {
+        communityService.deletePost(id);
+        return "redirect:/communityList";
+    }
+
 
 
 }
