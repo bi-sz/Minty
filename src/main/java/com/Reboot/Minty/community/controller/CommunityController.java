@@ -22,6 +22,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @Controller
 public class CommunityController {
@@ -77,14 +78,22 @@ public class CommunityController {
 
         List<Comments> comments = commentsService.getCommentsByCommunityId(community.getId());
 
-        List<CommunityLike> likes = communityLikeRepository.findByCommunity(community);
+        Optional<CommunityLike> communityLikeOpt = communityLikeRepository.findByCommunityAndUser(community, user);
+        boolean isLiked = false;
+        if (communityLikeOpt.isPresent()) {
+            CommunityLike communityLike = communityLikeOpt.get();
+            isLiked = communityLike.isCheckStatus();
+        }
 
+        System.out.println(isLiked);
+
+        model.addAttribute("isLiked", isLiked);
         model.addAttribute("community", community);
+        model.addAttribute("status", status);
         model.addAttribute("status", status);
         model.addAttribute("writer", writer);
         model.addAttribute("user", user);
         model.addAttribute("comments", comments);
-        model.addAttribute("likes", likes);
 
         return "/community/communityDetail";
     }

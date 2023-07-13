@@ -114,21 +114,19 @@ function toggleLike(likeButton) {
     },
     success: function(response) {
       // Toggle isLiked attribute
-      isLiked = !isLiked;
+      isLiked = response.isLiked;
       likeButton.setAttribute("data-is-liked", isLiked);
 
       // Update like button image
       if (isLiked) {
-        $("#like-button").attr("src", "/image/heart2.PNG");
+        $(likeButton).attr("src", "/image/heart2.PNG");
       } else {
-        $("#like-button").attr("src", "/image/heart1.PNG");
+        $(likeButton).attr("src", "/image/heart1.PNG");
       }
 
       // Update likes count
       var likesCountElement = document.querySelector(".like");
-      var likesCount = parseInt(likesCountElement.textContent.replace('좋아요 ', ''));
-      likesCount = isLiked ? likesCount + 1 : likesCount - 1;
-      likesCountElement.textContent = "좋아요 " + likesCount;
+      likesCountElement.textContent = "좋아요 " + response.likesCount;
     },
     error: function(error) {
       console.log(error);
@@ -147,7 +145,9 @@ function toggleLike(likeButton) {
     </div>
     <div class="row align-items-center">
       <div class="col-auto">
-        <img class="profileImg" th:if="${writer.image}" th:src="@{'https://storage.cloud.google.com/reboot-minty-storage/' + ${writer.image}}" alt="writer Image" />
+        <a th:href="@{/usershop/{userId}(userId=${writer.id})}">
+          <img class="profileImg" th:if="${writer.image}" th:src="@{'https://storage.cloud.google.com/reboot-minty-storage/' + ${writer.image}}" alt="writer Image" />
+        </a>
       </div>
       <div class="col">
         <h3><span class="writer" th:text="'작성자 : ' + ${writer.nickName}"></span></h3>
@@ -164,7 +164,9 @@ function toggleLike(likeButton) {
     <hr />
     <div class="row align-items-center">
       <div class="col-auto">
-        <img class="profileImg" th:if="${writer.image}" th:src="@{'https://storage.cloud.google.com/reboot-minty-storage/' + ${writer.image}}" alt="user Image" />
+        <a th:href="@{/usershop/{userId}(userId=${writer.id})}">
+          <img class="profileImg" th:if="${writer.image}" th:src="@{'https://storage.cloud.google.com/reboot-minty-storage/' + ${writer.image}}" alt="user Image" />
+        </a>
       </div>
       <div class="col">
         <a th:href="@{/usershop/{userId}(userId=${user.id})}" style="text-decoration: none;">
@@ -188,7 +190,9 @@ function toggleLike(likeButton) {
             <div class="comment">
               <div class="comment-content-horizontal">
                 <div class="comment-image">
-                  <img class="profileImg" th:if="${comment.user.image}" th:src="@{'https://storage.cloud.google.com/reboot-minty-storage/' + ${comment.user.image}}" alt="user Image" onclick="toggleLike()"/>
+                  <a th:href="@{/usershop/{userId}(userId=${comment.user.id})}">
+                    <img class="profileImg" th:if="${comment.user.image}" th:src="@{'https://storage.cloud.google.com/reboot-minty-storage/' + ${comment.user.image}}" alt="user Image" />
+                  </a>
                 </div>
                 <div class="comment-details">
                   <div classclassclass="comment-info">
@@ -215,6 +219,9 @@ function toggleLike(likeButton) {
         <form th:action="@{/comments}" method="post">
           <input type="hidden" name="communityId" th:value="${community.id}">
           <div class="comment-box">
+            <a th:href="@{/usershop/{userId}(userId=${user.id})}">
+              <img class="profileImg" th:if="${user.image}" th:src="@{'https://storage.cloud.google.com/reboot-minty-storage/' + ${comment.user.image}}" alt="user Image" />
+            </a>
             <span th:text="${user.nickName}"></span>
             <input type="hidden" name="tagUserId" th:if="${tagUser}" th:value="${tagUser.id}" />
             <textarea name="commentContent" placeholder="댓글을 남겨보세요.." rows="4" cols="50"></textarea>
@@ -224,11 +231,7 @@ function toggleLike(likeButton) {
         </form>
       </div>
     </div>
-
-
   </div>
 </div>
-
-
 </body>
 </html>

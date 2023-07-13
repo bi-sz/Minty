@@ -15,6 +15,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 @Controller
@@ -69,6 +71,10 @@ public class CommunityLikeController {
 
         communityRepository.save(community);
 
-        return new ResponseEntity<>(isLiked, HttpStatus.OK);
+        Map<String, Object> responseBody = new HashMap<>();
+        responseBody.put("isLiked", isLiked);
+        responseBody.put("likesCount", community.getInteresting());
+
+        return new ResponseEntity<>(responseBody, HttpStatus.OK);
     }
 }
