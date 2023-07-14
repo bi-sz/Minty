@@ -11,9 +11,11 @@ import com.Reboot.Minty.tradeBoard.constant.TradeStatus;
 import com.Reboot.Minty.tradeBoard.dto.*;
 import com.Reboot.Minty.tradeBoard.entity.TradeBoard;
 import com.Reboot.Minty.tradeBoard.entity.TradeBoardImg;
+import com.Reboot.Minty.tradeBoard.entity.WishLike;
 import com.Reboot.Minty.tradeBoard.repository.TradeBoardCustomRepository;
 import com.Reboot.Minty.tradeBoard.repository.TradeBoardImgRepository;
 import com.Reboot.Minty.tradeBoard.repository.TradeBoardRepository;
+import com.Reboot.Minty.tradeBoard.repository.WishLikeRepository;
 import com.google.cloud.storage.BlobId;
 import com.google.cloud.storage.BlobInfo;
 import com.google.cloud.storage.Storage;
@@ -47,25 +49,24 @@ public class TradeBoardService {
     private final UserLocationRepository userLocationRepository;
 
     private final TradeBoardCustomRepository tradeBoardCustomRepository;
+
+    private final WishLikeRepository wishLikeRepository;
     @Autowired
     private Storage storage;
 
-
-
-
     @Autowired
-    public TradeBoardService(TradeBoardRepository tradeBoardRepository, TradeBoardImgRepository tradeBoardImgRepository, UserRepository userRepository, UserLocationRepository userLocationRepository, TradeBoardCustomRepository tradeBoardCustomRepository) {
+    public TradeBoardService(TradeBoardRepository tradeBoardRepository, TradeBoardImgRepository tradeBoardImgRepository, UserRepository userRepository, UserLocationRepository userLocationRepository, TradeBoardCustomRepository tradeBoardCustomRepository, WishLikeRepository wishLikeRepository) {
         this.tradeBoardRepository = tradeBoardRepository;
         this.tradeBoardImgRepository = tradeBoardImgRepository;
         this.userRepository = userRepository;
         this.userLocationRepository = userLocationRepository;
         this.tradeBoardCustomRepository = tradeBoardCustomRepository;
+        this.wishLikeRepository = wishLikeRepository;
     }
 
     public Slice<TradeBoardDto> getTradeBoard(TradeBoardSearchDto tradeBoardSearchDto, Pageable pageable){
         return tradeBoardCustomRepository.getTradeBoardBy(tradeBoardSearchDto, pageable);
     }
-
 
     public TradeBoard save(TradeBoard tradeBoard) {
         return tradeBoardRepository.save(tradeBoard);
@@ -73,6 +74,10 @@ public class TradeBoardService {
 
     public TradeBoardDetailDto findById(Long boardId) {
         TradeBoard tradeBoard = tradeBoardRepository.findById(boardId).orElseThrow(EntityNotFoundException::new);
+
+        tradeBoard.setVisit_count(tradeBoard.getVisit_count()+1);
+        tradeBoardRepository.save(tradeBoard);
+
         TradeBoardDetailDto dto = TradeBoardDetailDto.of(tradeBoard);
         System.out.println("of TradeBoardDetailDto" + dto.getTopCategory());
         if(dto.getTradeStatus().equals(TradeStatus.BANNED)||dto.getTradeStatus().equals(TradeStatus.DELETING)){
@@ -285,4 +290,61 @@ public class TradeBoardService {
 
         return tradeBoardDtos;
     }
+
+    public void like(WishLikeRequestDto requestDto, Boolean like) {
+
+        User userId = requestDto.getUserId();
+        TradeBoard tradeBoardId = requestDto.getPostId();
+
+        TradeBoard tradeBoard = tradeBoardRepository.findById(requestDto.getPostId().getId())
+                .orElseThrow(() -> new RuntimeException("게시물이 존재하지 않습니다."));
+
+        if (like) {
+            tradeBoard.setInteresting(tradeBoard.getInteresting() + 1);
+        } else {
+            tradeBoard.setInteresting(tradeBoard.getInteresting() - 1);
+        }
+
+        tradeBoardRepository.save(tradeBoard);
+
+        WishLike existingWishLike = wishLikeRepository.findByTradeBoardAndUser(tradeBoardId, userId)
+                .orElse(new WishLike());
+
+        existingWishLike.setUser(userId);
+        existingWishLike.setTradeBoard(tradeBoardId);
+        existingWishLike.setWish(like);
+
+        wishLikeRepository.save(existingWishLike);
+
+    }
+
+    public boolean getWish(Long boardId,Long userId) {
+        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>들어옴?");
+        System.out.println(boardId+"   "+userId);
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalStateException("User not found"));
+        TradeBoard tradeBoard =  tradeBoardRepository.findById(boardId).orElseThrow(EntityNotFoundException::new);
+
+        System.out.println(")))))))))))))))))))))))))))))))))))");
+        System.out.println(user.getId());
+        System.out.println(tradeBoard.getId());
+
+        //WishLike wishLike = wishLikeRepository.findByUserAndTradeBoard(user,tradeBoard);
+
+        WishLike existingWishLike = wishLikeRepository.findByTradeBoardAndUser(tradeBoard, user)
+                .orElse(new WishLike());
+
+        existingWishLike.setUser(user);
+        existingWishLike.setTradeBoard(tradeBoard);
+        existingWishLike.setWish(existingWishLike.isWish());
+        wishLikeRepository.save(existingWishLike);
+
+        System.out.println(existingWishLike.isWish());
+
+        boolean wish = existingWishLike.isWish();
+
+        return wish;
+    }
+
 }
