@@ -1,8 +1,6 @@
 package com.Reboot.Minty.member.controller;
 
 
-import com.Reboot.Minty.event.dto.AttendanceDto;
-import com.Reboot.Minty.event.entity.Attendance;
 import com.Reboot.Minty.event.service.AttendanceService;
 import com.Reboot.Minty.member.entity.User;
 import com.Reboot.Minty.member.repository.UserRepository;
@@ -17,6 +15,8 @@ import com.Reboot.Minty.trade.repository.TradeRepository;
 import com.Reboot.Minty.trade.service.ScheduleListService;
 import com.Reboot.Minty.trade.service.ScheduleService;
 import com.Reboot.Minty.trade.service.TradeService;
+import com.Reboot.Minty.tradeBoard.dto.TradeBoardDto;
+import com.Reboot.Minty.tradeBoard.service.TradeBoardService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +28,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Controller
@@ -42,10 +41,12 @@ public class MyPageController {
     private final TradeRepository tradeRepository;
     private final ScheduleService scheduleService;
     private final ScheduleListService scheduleListService;
+    private final TradeBoardService tradeBoardService;
+
 
 
     @Autowired
-    public MyPageController(AttendanceService attendanceService, UserRepository userRepository, UserService userService, ReviewService reviewService, TradeService tradeService, TradeRepository tradeRepository, ScheduleService scheduleService, ScheduleListService scheduleListService) {
+    public MyPageController(AttendanceService attendanceService, UserRepository userRepository, UserService userService, ReviewService reviewService, TradeService tradeService, TradeRepository tradeRepository, ScheduleService scheduleService, ScheduleListService scheduleListService, TradeBoardService tradeBoardService) {
         this.attendanceService = attendanceService;
         this.userRepository = userRepository;
         this.userService = userService;
@@ -54,6 +55,7 @@ public class MyPageController {
         this.tradeRepository = tradeRepository;
         this.scheduleService = scheduleService;
         this.scheduleListService = scheduleListService;
+        this.tradeBoardService = tradeBoardService;
     }
 
     @GetMapping("mypage")
@@ -117,7 +119,10 @@ public class MyPageController {
                 })
                 .collect(Collectors.toList());
 
+        List<TradeBoardDto> filteredTradeBoards = tradeBoardService.getTradeBoardListByUser(userId);
 
+
+        model.addAttribute("filteredTradeBoards", filteredTradeBoards);
         model.addAttribute("userTrades", userTrades);
 
         model.addAttribute("user", user);

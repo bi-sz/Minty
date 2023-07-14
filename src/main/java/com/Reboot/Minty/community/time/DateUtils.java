@@ -14,10 +14,10 @@ public class DateUtils {
         if (minutes < 1) {
             return "방금 전";
         } else if (minutes < 60) {
-            return createdDate.format(DateTimeFormatter.ofPattern("yy-MM-dd")) + " " + minutes + "분 전";
+            return minutes + "분 전";
         } else if (minutes < 1440) {
             long hours = minutes / 60;
-            return createdDate.format(DateTimeFormatter.ofPattern("yy-MM-dd")) + " " + hours + "시간 전";
+            return hours + "시간 전";
         } else {
             return createdDate.format(DateTimeFormatter.ofPattern("yy-MM-dd"));
         }

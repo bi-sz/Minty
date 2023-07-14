@@ -321,8 +321,12 @@
         </div>
 
         <!--사용자관리-->
-        <div class="board-area user-c-1">
+        <div class="board-area user-c-1" id="management">
             <h4>유저관리</h4>
+            <form id="search_form">
+                <input type="text" id="search-keyword" placeholder="이름 또는 닉네임 검색">
+                <button type="button" id="search_button">검색</button>
+            </form>
             <table class="table">
                 <thead>
                 <tr>
@@ -338,66 +342,36 @@
                     <th>수정</th>
                 </tr>
                 </thead>
-                <tbody>
+                <tbody id="search-result">
                 <tr th:each="user : ${userList}">
-                    <form th:action="@{/change/{id}(id=${user.id})}" method="post" class="d-flex">
-                        <td th:text="${user.getId()}">ID</td>
-                        <td th:text="${user.getName()}">이름</td>
-                        <td th:text="${user.getNickName()}">닉네임</td>
-                        <td th:text="${user.getAgeRange()}">연령대</td>
-                        <td th:text="${user.getMobile()}">연락처</td>
-                        <td th:text="${user.getGender()}">성별</td>
-                        <td th:text="${user.getEmail()}">이메일</td>
-                        <td>
-                            <select name="role">
-                                <option value="USER" th:selected="${user.getRole() == T(com.Reboot.Minty.member.constant.Role).USER}">USER</option>
-                                <option value="BAN" th:selected="${user.getRole() == T(com.Reboot.Minty.member.constant.Role).BAN}">BAN</option>
-                                <option value="GUEST" th:selected="${user.getRole() == T(com.Reboot.Minty.member.constant.Role).GUEST}">GUEST</option>
-                                <option value="REGISTER_USER" th:selected="${user.getRole() == T(com.Reboot.Minty.member.constant.Role).REGISTER_USER}">REGISTER_USER</option>
-                                <option value="ADMIN" th:selected="${user.getRole() == T(com.Reboot.Minty.member.constant.Role).ADMIN}">ADMIN</option>
-                            </select>
-                        </td>
-                        <td><a th:href="@{/usershop/{userId}(userId=${user.id})}">개인상점</a></td>
-                        <td>
-                            <button class="btn btn-outline-dark flex-shrink-0" type="submit">수정</button>
-                        </td>
-                    </form>
+                    <td th:text="${user.getId()}">ID</td>
+                    <td th:text="${user.getName()}">이름</td>
+                    <td th:text="${user.getNickName()}">닉네임</td>
+                    <td th:text="${user.getAgeRange()}">연령대</td>
+                    <td th:text="${user.getMobile()}">연락처</td>
+                    <td th:text="${user.getGender()}">성별</td>
+                    <td th:text="${user.getEmail()}">이메일</td>
+                    <td>
+                        <select name="role">
+                            <option value="USER" th:selected="${user.getRole() == T(com.Reboot.Minty.member.constant.Role).USER}">USER</option>
+                            <option value="BAN" th:selected="${user.getRole() == T(com.Reboot.Minty.member.constant.Role).BAN}">BAN</option>
+                            <option value="GUEST" th:selected="${user.getRole() == T(com.Reboot.Minty.member.constant.Role).GUEST}">GUEST</option>
+                            <option value="REGISTER_USER" th:selected="${user.getRole() == T(com.Reboot.Minty.member.constant.Role).REGISTER_USER}">REGISTER_USER</option>
+                            <option value="ADMIN" th:selected="${user.getRole() == T(com.Reboot.Minty.member.constant.Role).ADMIN}">ADMIN</option>
+                        </select>
+                    </td>
+                    <td><a th:href="@{/usershop/{userId}(userId=${user.id})}">개인상점</a></td>
+                    <td>
+                        <button class="btn btn-outline-dark flex-shrink-0 update-button" type="submit" data-user-id="${user.getId()}">수정</button>
+                    </td>
                 </tr>
                 </tbody>
             </table>
-<!--            <nav id="pag" style="text-align: center;">-->
-<!--                <ul class="pagination justify-content-center"-->
-<!--                    th:with="start=${(pageable.getPageNumber() / 10 * 10) + 1},-->
-<!--                  last=${(start + 9 < postList.getTotalPages()) ? (start + 9) : postList.getTotalPages()}">-->
-<!--                    <li class="page-item">-->
-<!--                        <a class="page-link" th:href="${postList.first} ? '#' : @{/manager(page=0)}" aria-label="First">-->
-<!--                            <span aria-hidden="true">&laquo;</span>-->
-<!--                        </a>-->
-<!--                    </li>-->
-<!--                    <li class="page-item" th:class="${postList.first} ? 'disabled'">-->
-<!--                        <a class="page-link" th:href="${postList.first} ? '#' : @{/manager(page=${postList.number - 1})}" aria-label="Previous">-->
-<!--                            <span aria-hidden="true">&lt;</span>-->
-<!--                        </a>-->
-<!--                    </li>-->
-<!--                    <li th:each="page : ${#numbers.sequence(start, last)}"-->
-<!--                        th:class="${postList.number == page - 1} ? 'page-item active' : 'page-item'">-->
-<!--                        <a class="page-link" th:href="@{/manager(page=${page - 1})}">-->
-<!--                            <span th:text="${page}"></span>-->
-<!--                        </a>-->
-<!--                    </li>-->
-<!--                    <li class="page-item" th:class="${postList.last} ? 'disabled'">-->
-<!--                        <a class="page-link" th:href="${postList.last} ? '#' : @{/manager(page=${postList.number + 1})}" aria-label="Next">-->
-<!--                            <span aria-hidden="true">&gt;</span>-->
-<!--                        </a>-->
-<!--                    </li>-->
-<!--                    <li class="page-item">-->
-<!--                        <a class="page-link" th:href="${postList.last} ? '#' : @{/manager(page=${postList.getTotalPages() - 1})}" aria-label="Last">-->
-<!--                            <span aria-hidden="true">&raquo;</span>-->
-<!--                        </a>-->
-<!--                    </li>-->
-<!--                </ul>-->
-<!--            </nav>-->
+            <nav aria-label="Page navigation">
+                <ul class="pagination"></ul>
+            </nav>
         </div>
+
         <!--컨텐츠 관리-->
         <div class="board-area content-c-1">
             컨텐츠관리
@@ -677,6 +651,306 @@ function adwindow(adId) {
       console.log(error);
     }
   });
+
+
+
+  //0713
+$(document).ready(function() {
+  // 검색 버튼 클릭 이벤트 처리
+  $("#search_button").click(function(event) {
+    event.preventDefault(); // 버튼 클릭 시 기본 동작 막기
+    performSearch();
+  });
+
+  // 검색 폼 제출 이벤트 처리
+  $("#search_form").submit(function(event) {
+    event.preventDefault(); // 폼 제출 시 기본 동작 막기
+    performSearch();
+  });
+
+  // AJAX를 통한 검색 요청 처리
+  function performSearch() {
+    var keyword = $("#search-keyword").val().trim();
+    console.log(keyword);
+
+    $.ajax({
+      type: "GET",
+      url: "/manager/userManagement",
+      data: {
+        query: keyword
+      },
+      contentType: "application/x-www-form-urlencoded", // 변경된 내용
+      beforeSend: function(xhr) {
+        xhr.setRequestHeader(header, token);
+      },
+      success: function(response) {
+        if (response && response.content && response.content.length) { // 수정된 내용
+          var userList = response.content; // 수정된 내용
+          var userListArea = $("#search-result");
+
+          userListArea.empty();
+
+          for (var i = 0; i < userList.length; i++) {
+            var user = userList[i];
+            var row = $("<tr></tr>");
+
+            row.append($("<td>").text(user.id));
+            row.append($("<td>").text(user.name));
+            row.append($("<td>").text(user.nickName));
+            row.append($("<td>").text(user.ageRange));
+            row.append($("<td>").text(user.mobile));
+            row.append($("<td>").text(user.gender));
+            row.append($("<td>").text(user.email));
+
+            var roleSelect = $("<select name='role'></select>");
+            roleSelect.append(
+              $("<option value='USER'></option>")
+                .text("USER")
+                .prop("selected", user.role === "USER")
+            );
+            roleSelect.append(
+              $("<option value='BAN'></option>")
+                .text("BAN")
+                .prop("selected", user.role === "BAN")
+            );
+            roleSelect.append(
+              $("<option value='GUEST'></option>")
+                .text("GUEST")
+                .prop("selected", user.role === "GUEST")
+            );
+            roleSelect.append(
+              $("<option value='REGISTER_USER'></option>")
+                .text("REGISTER_USER")
+                .prop("selected", user.role === "REGISTER_USER")
+            );
+            roleSelect.append(
+              $("<option value='ADMIN'></option>")
+                .text("ADMIN")
+                .prop("selected", user.role === "ADMIN")
+            );
+            var roleCell = $("<td>").append(roleSelect);
+            row.append(roleCell);
+
+            var userShopLink = $("<a></a>")
+              .attr("href", "/usershop/" + user.id)
+              .text("개인상점");
+            var userShopCell = $("<td>").append(userShopLink);
+            row.append(userShopCell);
+
+            var submitButton = $("<button>")
+              .addClass("btn btn-outline-dark flex-shrink-0 update-button")
+              .attr("type", "submit")
+              .text("수정");
+            var submitCell = $("<td>").append(submitButton);
+            row.append(submitCell);
+
+            userListArea.append(row);
+          }
+
+        } else {
+          console.log("Error: Invalid response format");
+        }
+      },
+      error: function(xhr, status, error) {
+        console.log("Error:", error);
+      }
+    });
+  }
+
+  // 수정 버튼 클릭 이벤트 처리
+  $(document).on("click", ".update-button", function(event) {
+    event.preventDefault();
+    var row = $(this).closest("tr");
+    var userId = row.find("td:first-child").text();
+    var role = row.find("select[name='role']").val();
+    updateUserRole(userId, role);
+  });
+
+  // 사용자 역할 업데이트 요청 처리
+  function updateUserRole(userId, role) {
+    $.ajax({
+      type: "POST",
+      url: "/change/" + userId,
+      data: { role: role },
+      beforeSend: function(xhr) {
+        xhr.setRequestHeader(header, token); // 헤더에 CSRF 토큰 추가
+      },
+      success: function(response) {
+        // 업데이트 성공한 경우 추가 로직 작성
+      },
+      error: function(xhr, status, error) {
+        console.log("Error:", error);
+      }
+    });
+  }
+});
+
+//0713 페이징
+$(document).ready(function() {
+  // 페이지 로드 시 초기 요청
+  getUserList();
+
+  // 페이지 번호 클릭 이벤트 처리
+  $(document).on('click', '.page-link', function(event) {
+    event.preventDefault();
+    var pageNumber = $(this).attr('data-page');
+    getUserList(pageNumber);
+  });
+
+  // 검색 버튼 클릭 이벤트 처리
+  $(document).on('click', '#search_button', function(event) {
+    event.preventDefault();
+    var query = $('#search-keyword').val();
+    getUserList(0, query);
+  });
+});
+
+function getUserList(pageNumber, query = '') {
+  $.ajax({
+    url: '/manager/userManagement',
+    type: 'GET',
+    data: {
+      page: pageNumber,
+      query: query
+    },
+    dataType: 'json',
+
+    success: function(data) {
+    console.log(data);
+
+    var userList = data.content;
+   if (data.pageable && typeof data.pageable.pageNumber !== 'undefined') {
+        var pageable = {
+          page: {
+            number: data.pageable.pageNumber // pageNumber를 사용
+          },
+          totalElements: data.totalElements // totalElements를 사용
+        };
+
+
+    var tbody = $('#search-result'); // 유저 정보를 출력할 tbody 요소
+
+      // 기존 테이블 내용 초기화
+      tbody.empty();
+
+      // 유저 정보 출력
+      for (var i = 0; i < userList.length; i++) {
+        var user = userList[i];
+        var tr = $('<tr></tr>');
+
+        // 각 열에 대한 정보를 생성하여 tr에 추가
+        tr.append($('<td></td>').text(user.id));
+        tr.append($('<td></td>').text(user.name));
+        tr.append($('<td></td>').text(user.nickName));
+        tr.append($('<td></td>').text(user.ageRange));
+        tr.append($('<td></td>').text(user.mobile));
+        tr.append($('<td></td>').text(user.gender));
+        tr.append($('<td></td>').text(user.email));
+        tr.append($('<td></td>').append(createRoleSelect(user.role))); // 권한 변경 select 요소
+        tr.append($('<td></td>').html('<a href="/usershop/' + user.id + '">개인상점</a>'));
+        tr.append($('<td></td>').html('<button class="btn btn-outline-dark flex-shrink-0 update-button" type="submit" data-user-id="' + user.id + '">수정</button>'));
+
+        tbody.append(tr);
+      }
+
+      // 페이징 버튼 생성
+      createPaginationButtons(pageable);
+
+      } else {
+        console.log("Error: Invalid response format - pageable or pageNumber is missing");
+      }
+    },
+    error: function(xhr, textStatus, errorThrown) {
+      // 에러 처리 로직을 작성
+    }
+  });
+}
+
+function createRoleSelect(selectedRole) {
+  var select = $('<select name="role"></select>');
+
+  // 각 옵션 요소 생성
+  var options = [
+    { value: 'USER', text: 'USER' },
+    { value: 'BAN', text: 'BAN' },
+    { value: 'GUEST', text: 'GUEST' },
+    { value: 'REGISTER_USER', text: 'REGISTER_USER' },
+    { value: 'ADMIN', text: 'ADMIN' }
+  ];
+
+  // 옵션 요소를 select에 추가
+  for (var i = 0; i < options.length; i++) {
+    var option = options[i];
+    var optionElement = $('<option></option>')
+      .attr('value', option.value)
+      .text(option.text);
+
+    if (option.value === selectedRole) {
+      optionElement.attr('selected', 'selected');
+    }
+
+    select.append(optionElement);
+  }
+
+  return select;
+}
+
+function createPaginationButtons(pageable) {
+  var pagination = $('.pagination');
+  pagination.empty();
+
+  var currentPage = pageable && pageable.page ? pageable.page.number : 0;
+  var totalUsers = pageable && pageable.totalElements ? pageable.totalElements : 0;
+  var usersPerPage = 10; // 페이지당 보여줄 유저 수
+  var totalPages = Math.ceil(totalUsers / usersPerPage);
+
+  console.log("Total Pages:", totalPages);
+  console.log("Current Page:", currentPage);
+
+  if (totalPages <= 1) {
+    return; // 페이징이 필요 없는 경우 종료
+  }
+
+  // 이전 페이지 버튼
+  if (currentPage > 0) {
+    pagination.append(
+      $('<li></li>').addClass('page-item').append(
+        $('<a></a>')
+          .addClass('page-link')
+          .attr('href', '#')
+          .attr('data-page', currentPage - 1)
+          .text('이전')
+      )
+    );
+  }
+
+  // 페이지 번호 버튼
+  for (var i = 0; i < totalPages; i++) {
+    pagination.append(
+      $('<li></li>').addClass('page-item' + (currentPage === i ? ' active' : '')).append(
+        $('<a></a>')
+          .addClass('page-link')
+          .attr('href', '#')
+          .attr('data-page', i)
+          .text(i + 1)
+      )
+    );
+  }
+
+  // 다음 페이지 버튼
+  if (currentPage < totalPages - 1) {
+    pagination.append(
+      $('<li></li>').addClass('page-item').append(
+        $('<a></a>')
+          .addClass('page-link')
+          .attr('href', '#')
+          .attr('data-page', currentPage + 1)
+          .text('다음')
+      )
+    );
+  }
+}
+
 </script>
 </div>
 </body>

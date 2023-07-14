@@ -412,6 +412,49 @@
         .space{
             cursor:pointer;
         }
+        <!--판매내역-->
+   .tradeboard {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+    }
+
+    .tradeboard-container {
+      position: relative;
+      display: flex;
+      align-items: flex-start;
+      width: 400px;
+      height: 150px;
+      background-color: white;
+      border: 1px solid;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      padding: 20px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+
+    .tradeboard-image {
+      width: 100px;
+      height: 100px;
+      margin-top: 10px;
+    }
+    .board-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .tradeboard-details {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      font-size: 14px;
+      line-height: 0.3;
+      margin-top: 25px;
+      margin-left: 10px;
+    }
     </style>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script th:inline="javascript">
@@ -472,13 +515,13 @@
             <div class="profile">
                 <div class="front">
                     <img class="profileImg" th:if="${user.image}" th:src="@{'https://storage.cloud.google.com/reboot-minty-storage/' + ${user.image}}" alt="User Image" style="max-height: 100%; width: max-height: 100%;"/>
+                    <img class="profileImg" th:unless="${user.image}" src="/image/manager.PNG" alt="Profile Picture"/>
                     <div class="info">
                         <div class="ratings">
-                            <img src="/image/myPage/score.PNG" alt="평점 이미지">
                             <div class="score" th:text="${averageRating}"></div>
                         </div>
                         <div class="information">
-                            <div class="nickname">Lv. <span th:text="${user.level}"></span> <span th:text="${user.nickName}"></span></div>
+                            <div class="nickname">Lv. <span id="userLevel" th:text="${user.level}"></span> <span th:text="${user.nickName}"></span></div>
                             <div class="email"><span th:text="${user.email}"></span></div>
                         </div>
                     </div>
@@ -554,7 +597,20 @@
             <!-- 보드 영역 내용 -->
 
             <div class="tab-content p show">
-                <p>판매내역 보드</p>
+                <div class="tradeboard">
+                    <th:block th:each="tradeBoard : ${filteredTradeBoards}">
+                        <div class="tradeboard-container">
+                            <div class="tradeboard-image">
+                                <img th:src="@{'https://storage.googleapis.com/reboot-minty-storage/' + ${tradeBoard.thumbnail}}" alt="tradeBoard Image" class="board-img" />
+                            </div>
+                            <div class="tradeboard-details">
+                                <p>상품명:<span th:text="${tradeBoard.title}"></span></p>
+                                <p>가격:<span th:text="${tradeBoard.price}"></span></p>
+                                <p>작성일:<span th:text="${#dates.format(tradeBoard.createdDate, 'yy-MM-dd')}"></span></p>
+                            </div>
+                        </div>
+                    </th:block>
+                </div>
             </div>
 
             <div class="tab-content i">
@@ -665,6 +721,40 @@
     </div>
     <script type="text/javascript" th:src="@{/js/myPage.js}"></script>
     <script>
+<!--    레벨이미지-->
+
+window.addEventListener('DOMContentLoaded', function() {
+    var userLevel = parseInt(document.getElementById('userLevel').textContent);
+    var ratingsContainer = document.querySelector('.ratings');
+
+    // 레벨에 따라 이미지 경로 설정
+    var imagePath = '';
+    if (userLevel >= 1 && userLevel <= 2) {
+        imagePath = '/image/myPage/level1-2.PNG';
+    } else if (userLevel >= 3 && userLevel <= 5) {
+        imagePath = '/image/myPage/level3-5.PNG';
+    } else if (userLevel >= 6 && userLevel <= 7) {
+        imagePath = '/image/myPage/level6-7.PNG';
+    } else if (userLevel >= 8 && userLevel <= 10) {
+        imagePath = '/image/myPage/level8-10.PNG';
+    } else {
+        // 기본 이미지 경로 설정
+        imagePath = '/image/myPage/level11.PNG';
+    }
+
+    // 이미지 업데이트
+    var levelImage = new Image();
+    levelImage.src = imagePath;
+    levelImage.alt = '레벨 ' + userLevel + ' 이미지';
+
+    // 이미지 스타일 설정
+    levelImage.style.maxWidth = '100%';
+    levelImage.style.height = 'auto';
+
+    // ratings 컨테이너에 이미지 추가
+    ratingsContainer.insertBefore(levelImage, ratingsContainer.firstChild);
+});
+
 <!-- 후기 -->
 window.onload = function() {
   setTimeout(function() {

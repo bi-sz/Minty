@@ -285,23 +285,20 @@ public class ManagerController {
     }
 
     @PostMapping("/change/{id}")
-    public String updateUserRole(@PathVariable("id") Long id, @RequestParam("role") String role) {
+    @ResponseBody
+    public ResponseEntity<String> updateUserRole(@PathVariable("id") Long id, @RequestParam("role") String role) {
         userService.updateUserRole(id, Role.valueOf(role));
-        return "redirect:/manager";
+        return ResponseEntity.ok().build();
     }
 
 
-    @GetMapping(value = "/userManagement")
-    public String userManagement(
+
+    @GetMapping(value = "/manager/userManagement", produces = "application/json")
+    @ResponseBody
+    public Page<User> userManagement(
             @RequestParam(required = false) String query,
-            Model model,
             @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.ASC) Pageable pageable
     ) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-// 인증 객체에서 로그인된 사용자의 정보를 가져옴
-        User loggedInUser = userRepository.findByEmail(authentication.getName());
-
         Page<User> userList;
 
         if (query != null && !query.isEmpty()) {
@@ -310,11 +307,8 @@ public class ManagerController {
             userList = userService.getPostList(pageable);
         }
 
-        model.addAttribute("userList", userList.getContent());
-        model.addAttribute("user", loggedInUser);
-        model.addAttribute("postList", userList);
-        model.addAttribute("pageable", pageable);
-        return "manager/userManagement";
+        return userList;
     }
+
 
 }

@@ -1522,11 +1522,10 @@ background-image: linear-gradient(315deg, #4dccc6 0%, #96e4df 74%);
         <img th:unless="${user.image}" src="/image/manager.PNG" alt="Profile Picture" />
         <div class="info">
           <div class="ratings">
-            <img src="/image/myPage/score.PNG" alt="평점 이미지">
             <div class="score" th:text="${averageRating}"></div>
           </div>
           <div class="information">
-            <div class="nickname">Lv. <span th:text="${user.level}"></span> <span th:text="${user.nickName}"></span></div>
+            <div class="nickname">Lv. <span id="userLevel" th:text="${user.level}"></span> <span th:text="${user.nickName}"></span></div>
             <div class="email"><span th:text="${user.email}"></span></div>
           </div>
         </div>
@@ -1629,6 +1628,7 @@ background-image: linear-gradient(315deg, #4dccc6 0%, #96e4df 74%);
               <div class="tradeboard-details">
                 <p>상품명:<span th:text="${tradeBoard.title}"></span></p>
                 <p>가격:<span th:text="${tradeBoard.price}"></span></p>
+                <p>작성일:<span th:text="${#dates.format(tradeBoard.createdDate, 'yy-MM-dd')}"></span></p>
               </div>
             </div>
           </th:block>
@@ -1683,7 +1683,42 @@ background-image: linear-gradient(315deg, #4dccc6 0%, #96e4df 74%);
 
 
   <script type="text/javascript" th:src="@{/js/userShop.js}"></script>
-  <script><!-- 후기 -->
+  <script>
+<!--  레벨이미지-->
+
+  window.addEventListener('DOMContentLoaded', function() {
+    var userLevel = parseInt(document.getElementById('userLevel').textContent);
+    var ratingsContainer = document.querySelector('.ratings');
+
+    // 레벨에 따라 이미지 경로 설정
+    var imagePath = '';
+    if (userLevel >= 1 && userLevel <= 2) {
+        imagePath = '/image/myPage/level1-2.PNG';
+    } else if (userLevel >= 3 && userLevel <= 5) {
+        imagePath = '/image/myPage/level3-5.PNG';
+    } else if (userLevel >= 6 && userLevel <= 7) {
+        imagePath = '/image/myPage/level6-7.PNG';
+    } else if (userLevel >= 8 && userLevel <= 10) {
+        imagePath = '/image/myPage/level8-10.PNG';
+    } else {
+        // 기본 이미지 경로 설정
+        imagePath = '/image/myPage/level11.PNG';
+    }
+
+    // 이미지 업데이트
+    var levelImage = new Image();
+    levelImage.src = imagePath;
+    levelImage.alt = '레벨 ' + userLevel + ' 이미지';
+
+    // 이미지 스타일 설정
+    levelImage.style.maxWidth = '100%';
+    levelImage.style.height = 'auto';
+
+    // ratings 컨테이너에 이미지 추가
+    ratingsContainer.insertBefore(levelImage, ratingsContainer.firstChild);
+});
+
+  <!-- 후기 -->
 window.onload = function() {
   setTimeout(function() {
     const reviewContainers = document.getElementsByClassName('review');

@@ -285,6 +285,4 @@ public class TradeBoardService {
 
         return tradeBoardDtos;
     }
-
-
 }

@@ -7,6 +7,8 @@ import com.Reboot.Minty.member.service.UserService;
 import com.Reboot.Minty.review.entity.Review;
 import com.Reboot.Minty.review.service.ReviewService;
 import com.Reboot.Minty.trade.service.TradeService;
+import com.Reboot.Minty.tradeBoard.dto.TradeBoardDto;
+import com.Reboot.Minty.tradeBoard.service.TradeBoardService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,14 +26,16 @@ public class UserShopController {
     private final TradeService tradeService;
     private final UserService userService;
     private final AttendanceService attendanceService;
+    private final TradeBoardService tradeBoardService;
 
     @Autowired
-    public UserShopController(ReviewService reviewService, UserRepository userRepository, TradeService tradeService, UserService userService, AttendanceService attendanceService) {
+    public UserShopController(ReviewService reviewService, UserRepository userRepository, TradeService tradeService, UserService userService, AttendanceService attendanceService, TradeBoardService tradeBoardService) {
         this.reviewService = reviewService;
         this.userRepository = userRepository;
         this.tradeService = tradeService;
         this.userService = userService;
         this.attendanceService = attendanceService;
+        this.tradeBoardService = tradeBoardService;
     }
 
     @GetMapping(value = {"usershop", "usershop/{userId}"})
@@ -52,6 +56,8 @@ public class UserShopController {
                 model.addAttribute("receivedReviews", receivedReviews);
                 double averageRating = reviewService.calculateAverageRating(receivedReviews);
                 model.addAttribute("averageRating", averageRating);
+                List<TradeBoardDto> tradeBoardList = tradeBoardService.getTradeBoardListByUser(currentUser.getId());
+                model.addAttribute("tradeBoardList", tradeBoardList);
 
                 ownerId = otherUser.getId(); // 상점 주인의 ID 설정
             } else {
@@ -63,8 +69,12 @@ public class UserShopController {
             model.addAttribute("receivedReviews", receivedReviews);
             double averageRating = reviewService.calculateAverageRating(receivedReviews);
             model.addAttribute("averageRating", averageRating);
+            List<TradeBoardDto> tradeBoardList = tradeBoardService.getTradeBoardListByUser(currentUser.getId());
+            model.addAttribute("tradeBoardList", tradeBoardList);
+
 
             ownerId = currentUser.getId(); // 상점 주인의 ID 설정
+
         }
 
         int tradeCount = tradeService.getTradeCountForStoreOwner(ownerId);
