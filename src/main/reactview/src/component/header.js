@@ -52,10 +52,6 @@ function Header({ csrfToken }) {
                             거래 게시판
                         </a>
                         <p></p>
-                        <a href="/jobList" className="nav-link menu-a">
-                            급해요
-                        </a>
-                        <p></p>
                         <a href="/event" className="nav-link menu-a">
                             이벤트
                         </a>
