@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Repository
@@ -16,5 +17,7 @@ public interface RouletteRepository extends JpaRepository<Roulette, Long> {
     @Query("SELECT SUM(r.point) FROM Roulette r WHERE r.user.id = :userId")
     Integer sumPointByUser(@Param("userId") Long userId);
 
+    Roulette findByUserAndDate(User user, LocalDate currentDate);
 
+    List<Roulette> findByDate(LocalDate currentDate);
 }
