@@ -5,6 +5,7 @@ import { Container, Row, Col, Button, Carousel, Stack, Modal } from 'react-boots
 import '../css/boardDetail.css';
 import { formatDistanceToNow, parseISO } from 'date-fns';
 import { ko } from 'date-fns/locale';
+import 'bootstrap-icons/font/bootstrap-icons.css';
 
 function BoardDetail({ csrfToken }) {
   let [tradeBoard, setTradeBoard] = useState({});
@@ -15,16 +16,17 @@ function BoardDetail({ csrfToken }) {
   const [nickName, setNickName] = useState('');
   const [showModal, setShowModal] = useState(false); // Modal 표시 여부 상태
   const { id } = useParams();
+  const [isLiked, setIsLiked] = useState();
 
-const navigate = useNavigate();
+  const navigate = useNavigate();
 
-   const handleEditClick = () => {
-     navigate(`/writeForm/${id}`, { state: { tradeBoard, imageList } });
-   };
+  const handleEditClick = () => {
+    navigate(`/writeForm/${id}`, { state: { tradeBoard, imageList } });
+  };
 
-   const handleDeleteClick = () => {
-     axios
-     .post('/api/tradeBoard/deleteRequest', tradeBoard.id, {
+  const handleDeleteClick = () => {
+    axios
+    .post('/api/tradeBoard/deleteRequest', tradeBoard.id, {
        headers: {
          'Content-Type': 'application/json',
          'X-CSRF-TOKEN': csrfToken,
@@ -50,6 +52,7 @@ const fetchData = () => {
         setNickName(response.data.nickName);
         setImageList(list);
         setIsAuthor(response.data.author);
+        setIsLiked(response.data.wish);
       } else {
         alert("알 수 없는 오류");
         window.history.back(); // 이전 페이지로 이동
@@ -108,6 +111,46 @@ const fetchData = () => {
            });
     };
 
+    const handleLikeClick = () => {
+            if (!isLiked) {
+                // 기존 찜하기 상태가 아니면 interesting 카운트 1 증가
+                setTradeBoard(() => ({
+                    ...tradeBoard,
+                    interesting: tradeBoard.interesting + 1,
+                }));
+                setIsLiked(true);
+            } else {
+                // 기존 찜하기 상태면 interesting 카운트 1 감소
+                setTradeBoard(() => ({
+                    ...tradeBoard,
+                    interesting: tradeBoard.interesting - 1,
+                }));
+                setIsLiked(false);
+            }
+
+            axios.
+            post(
+                '/api/tradeBoard/like',
+                {
+                    id: tradeBoard.id,
+                    isLiked: !isLiked
+                },
+                {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': csrfToken
+                    }
+                }
+            )
+                .then((response) => {
+                    // 필요한 경우 API 성공 응답 처리
+                })
+                .catch((error) => {
+                    // 필요한 경우 API 오류 처리
+                });
+        };
+
+
   return (
     <Container>
       <Row className="board-top">
@@ -139,16 +182,28 @@ const fetchData = () => {
             <h2>{nickName}</h2>
           </Stack>
           <Col className="board-stats">
-            <span>🤍 {tradeBoard.interesting}</span>
+            <span> <i className={`bi ${isLiked ? "bi-heart-fill" : "bi-heart"}`}></i>  {tradeBoard.interesting}</span>
             <span>👁‍ {tradeBoard.visit_count}</span>
             <span>{timeAgo}</span>
           </Col>
           <Col className="button-groups">
-            {!isAuthor && <Button variant="primary">찜하기</Button>}
-             {!isAuthor && tradeBoard.tradeStatus == "SELL" && <Button variant="secondary" onClick={chatRoom}>채팅</Button>}
-                  {/*{!isAuthor &&<Button variant="success" onClick={purchasingReq}>*/}
-           {/*  구매 신청*/}
-           {/*</Button>}*/}
+            {!isAuthor && (
+              <Button variant="primary" onClick={handleLikeClick}>
+                {isLiked ? (
+                  <>
+                    찜하기취소
+                  </>
+                ) : (
+                  <>
+                    찜하기
+                  </>
+                )}
+              </Button>
+            )}
+            {!isAuthor && tradeBoard.tradeStatus == "SELL" && <Button variant="secondary" onClick={chatRoom}>채팅</Button>}
+            {/*{!isAuthor &&<Button variant="success" onClick={purchasingReq}>*/}
+            {/*  구매 신청*/}
+            {/*</Button>}*/}
           </Col>
         </Col>
       </Row>
