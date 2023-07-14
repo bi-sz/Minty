@@ -415,4 +415,5 @@ public class TradeBoardController {
             return ResponseEntity.badRequest().build();
         }
     }
+
 }
