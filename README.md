@@ -39,4 +39,5 @@ PS 경로\Minty>
 
 PS 경로 \Minty\src\main\reactview>
 *npm install @turf/turf
+npm i bootstrap-icons
  
