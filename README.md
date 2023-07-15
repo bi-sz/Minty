@@ -38,6 +38,6 @@ PS 경로\Minty>
 * cd src/main/reactview
 
 PS 경로 \Minty\src\main\reactview>
-*npm install @turf/turf
-*npm i bootstrap-icons
+* npm install @turf/turf
+* npm i bootstrap-icons
  
