@@ -31,12 +31,13 @@ React의 생명주기 메서드와 Hook 등의 개념을 이해하고 적용하�
 PS 경로\Minty>
 * pip install selenium
 * pip install openai
-* pip install tkinter
+* pip install tk
 * pip install pandas
 
 PS 경로\Minty>
 * cd src/main/reactview
 
 PS 경로 \Minty\src\main\reactview>
-*npm install @turf/turf
+* npm install @turf/turf
+* npm i bootstrap-icons
  

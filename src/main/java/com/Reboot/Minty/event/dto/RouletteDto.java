@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDate;
+
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
@@ -13,5 +15,5 @@ public class RouletteDto {
     private Long userId;
     private String result;
     private int point;
-
+    private LocalDate currentDate;
 }

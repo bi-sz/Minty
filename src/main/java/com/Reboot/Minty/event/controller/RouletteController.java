@@ -1,4 +1,3 @@
-
 package com.Reboot.Minty.event.controller;
 
 import com.Reboot.Minty.event.dto.RouletteDto;
@@ -14,6 +13,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
 
 @Controller
 public class RouletteController {
@@ -32,6 +35,17 @@ public class RouletteController {
             Long userId = (Long) session.getAttribute("userId");
             model.addAttribute("userId", userId);
             model.addAttribute("message", "룰렛돌리기ㅎㅇ");
+
+            // Check if roulette information exists for the current date
+            LocalDate currentDate = LocalDate.now();
+            List<Roulette> rouletteList = rouletteService.getRouletteByDate(currentDate);
+
+            if (!rouletteList.isEmpty()) {
+                model.addAttribute("canSpin", false); // Set canSpin attribute to false
+            } else {
+                model.addAttribute("canSpin", true); // Set canSpin attribute to true
+            }
+
             return "event/roulette";
         } catch (Exception e) {
             model.addAttribute("error", "요청을 처리하는 중에 오류가 발생했습니다.");
@@ -40,13 +54,14 @@ public class RouletteController {
         }
     }
 
+
     @PostMapping("/roulette/save")
     @ResponseBody
     public Roulette saveRoulette(@RequestBody RouletteDto rouletteDto, HttpSession session) {
         try {
             Long userId = (Long) session.getAttribute("userId");
-
             User user = userRepository.findById(userId).orElse(null);
+
             if (user == null) {
                 System.out.println("사용자를 찾을 수 없습니다.");
                 return null;
@@ -61,6 +76,7 @@ public class RouletteController {
             roulette.setUser(user);
             roulette.setResult(rouletteDto.getResult());
             roulette.setPoint(rouletteDto.getPoint());
+            roulette.setDate(rouletteDto.getCurrentDate()); // Set the currentDate field
 
             System.out.println("Saving roulette: " + roulette);
             Roulette savedRoulette = rouletteService.saveRoulette(roulette);
@@ -73,4 +89,6 @@ public class RouletteController {
             return null;
         }
     }
+
+
 }
