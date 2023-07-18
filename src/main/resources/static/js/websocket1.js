@@ -327,24 +327,24 @@ function formMessageLauch(id,name,type,title,content,price,thumbnail,profile){
     let nama1 = $('#formMessageHeader').find('span#title-content');
 
     if (type === "user") {
-    nama.html('<a href="http://localhost:8087/usershop/' + id + '"><img src="https://storage.googleapis.com/reboot-minty-storage/' + profile + '" alt="Selected User Image" class="rounded-circle me-2" width="50px" height="50px"></a>' + name);
-    nama1.html('<img src="https://storage.googleapis.com/reboot-minty-storage/' + thumbnail + '" alt="Thumbnail" class="rounded-circle user_img" width="50px" height="50px">'+'<div id="title-price"><span id="title-content-title" class="truncate">' +title+ '</span>' + '<span id="title-content-price">'+ new Intl.NumberFormat('ko-KR', { style: 'currency', currency: 'KRW' }).format(price) + '원</span></div>' );
-    nama.attr("data-id",id);
+        nama.html('<a href="http://localhost:8087/usershop/' + id + '"><img src="https://storage.googleapis.com/reboot-minty-storage/' + profile + '" alt="Selected User Image" class="rounded-circle me-2" width="50px" height="50px"></a>' + name);
+        nama1.html('<img src="https://storage.googleapis.com/reboot-minty-storage/' + thumbnail + '" alt="Thumbnail" class="rounded-circle user_img" width="50px" height="50px">'+'<div id="title-price"><span id="title-content-title" class="truncate">' +title+ '</span>' + '<span id="title-content-price">'+ new Intl.NumberFormat('ko-KR', { style: 'currency', currency: 'KRW' }).format(price) + '원</span></div>' );
+        nama.attr("data-id",id);
 
-    nama1.show();
-    document.getElementById("formProductsBody").style.display = 'block';
-    document.getElementById("formMessageHeader").style.borderBottom = 'none';
+        nama1.show();
+        document.getElementById("formProductsBody").style.display = 'block';
+        document.getElementById("formMessageHeader").style.borderBottom = 'none';
 
 
     } else if ((type === "group")) {
 
-        nama.html('<a href="#"><img img src="https://storage.googleapis.com/reboot-minty-storage/' + profile + '" alt="Selected User Image" class="rounded-circle me-2"></a>' + "지역 채팅방" );
+        nama.html('<a href="#"><img src="/image/chat2.PNG" width="50px" height="50px" alt="Selected User Image" class="rounded-circle me-2"></a>' + "지역 채팅방" );
         nama.attr("data-id",name);
 
-    nama1.html(name);
-    document.getElementById("formProductsBody").style.display = 'none';
-    document.getElementById("formMessageHeader").style.borderBottom = '3px solid grey';
-    document.getElementById("formMessageHeader").style.paddingBottom = '10px';
+        nama1.html(name);
+        document.getElementById("formProductsBody").style.display = 'none';
+        document.getElementById("formMessageHeader").style.borderBottom = '3px solid grey';
+        document.getElementById("formMessageHeader").style.paddingBottom = '10px';
 
     }
 
@@ -411,7 +411,8 @@ function formMessageLauch(id,name,type,title,content,price,thumbnail,profile){
 
 
         $.get(url + "/listProducts/" + userId + "/" + id, function (response) {
-            scrollToBottom();
+            $('#formProductsBody').empty();
+
             let products = response;
             console.log(products);
             console.log(">>>>>>>>>>>>>>>>>" + userId);
@@ -434,38 +435,39 @@ function formMessageLauch(id,name,type,title,content,price,thumbnail,profile){
             scrollToBottom(); // 스크롤을 아래로 이동
         });
 
+
     }else if(type==="group"){
-            $.get(url + "/listmessage/group/"+name, function (response) {
-                let messagesGroup = response;
-                console.log(messagesGroup);
-                let messageGroupTemplateHTML = "";
-                for (let i = 0; i < messagesGroup.length; i++) {
-                    // console.log(messagesGroup[i]['messages'])
-                    let content = messagesGroup[i]["messages"].endsWith("images")
-                        ?  '<a href="https://storage.googleapis.com/reboot-minty-storage/' + messagesGroup[i]["messages"] + '" target="_blank"><img src="https://storage.googleapis.com/reboot-minty-storage/' + messagesGroup[i]["messages"] + '" alt="이미지" width="100px" height="100px"/></a>'
-                        : messagesGroup[i]["messages"];
+        $.get(url + "/listmessage/group/"+name, function (response) {
+            let messagesGroup = response;
+            console.log(messagesGroup);
+            let messageGroupTemplateHTML = "";
+            for (let i = 0; i < messagesGroup.length; i++) {
+                // console.log(messagesGroup[i]['messages'])
+                let content = messagesGroup[i]["messages"].endsWith("images")
+                    ?  '<a href="https://storage.googleapis.com/reboot-minty-storage/' + messagesGroup[i]["messages"] + '" target="_blank"><img src="https://storage.googleapis.com/reboot-minty-storage/' + messagesGroup[i]["messages"] + '" alt="이미지" width="100px" height="100px"/></a>'
+                    : messagesGroup[i]["messages"];
 
-                    if(messagesGroup[i]['user_id']==userId){
-                        messageGroupTemplateHTML = messageGroupTemplateHTML + '<div id="child_message" class="row justify-content-end mb-2">'+
-                            '<div id="child_message" class="col-auto chat_message my_chat">'+ '<p>'+content+'</p>' +
-                            '</div>'+
-                            '</div>';
-                    }else{
-                        messageGroupTemplateHTML = messageGroupTemplateHTML + '<div id="child_message" class="row justify-content-start mb-2">'+
-                            '<p>'+messagesGroup[i]['nick_name']+'</p>' +
-                            '<div id="child_message" class="col-auto chat_message their_chat">'+
-                            '<p>'+content+'</p>'+
-                            '</div>'+
-                            '</div>';
-                    }
-
+                if(messagesGroup[i]['user_id']==userId){
+                    messageGroupTemplateHTML = messageGroupTemplateHTML + '<div id="child_message" class="row justify-content-end mb-2">'+
+                        '<div id="child_message" class="col-auto chat_message my_chat">'+ '<p>'+content+'</p>' +
+                        '</div>'+
+                        '</div>';
+                }else{
+                    messageGroupTemplateHTML = messageGroupTemplateHTML + '<div id="child_message" class="row justify-content-start mb-2">'+
+                        '<p>'+messagesGroup[i]['nick_name']+'</p>' +
+                        '<div id="child_message" class="col-auto chat_message their_chat">'+
+                        '<p>'+content+'</p>'+
+                        '</div>'+
+                        '</div>';
                 }
-                $('#chat-body').append(messageGroupTemplateHTML);
-                scrollToBottom(); // 스크롤을 아래로 이동
 
-            });
+            }
+            $('#chat-body').append(messageGroupTemplateHTML);
+            scrollToBottom(); // 스크롤을 아래로 이동
 
-        }
+        });
+
+    }
 
     let dataType = type;
 
@@ -486,14 +488,14 @@ function formMessageLauch(id,name,type,title,content,price,thumbnail,profile){
         }
     });
 
-        let ImageAndNumber =
-            '<div class="input-group-prepend" id="imageAndNumber">' +
-            '<input type="file" id="imageFile" accept="image/*" onchange="uploadImage(\'' + dataType + '\')" hidden>' +
-            '<label for="imageFile" class="input-group-text mint-border mint-background"><i class="fas fa-paperclip" style="color: white;"></i></label>' +
-            '<input type="button" id="call-icon" onclick="getNumber(\'' + dataType + '\')" hidden>' +
-            '<label for="call-icon" class="input-group-text mint-border mint-background"><i class="fas fa-phone" style="color: white;"></i></label>' +
-            '</div>';
-        $('#ImageAndNumber').append(ImageAndNumber);
+    let ImageAndNumber =
+        '<div class="input-group-prepend" id="imageAndNumber">' +
+        '<input type="file" id="imageFile" accept="image/*" onchange="uploadImage(\'' + dataType + '\')" hidden>' +
+        '<label for="imageFile" class="input-group-text mint-border mint-background"><i class="fas fa-paperclip" style="color: white;"></i></label>' +
+        '<input type="button" id="call-icon" onclick="getNumber(\'' + dataType + '\')" hidden>' +
+        '<label for="call-icon" class="input-group-text mint-border mint-background"><i class="fas fa-phone" style="color: white;"></i></label>' +
+        '</div>';
+    $('#ImageAndNumber').append(ImageAndNumber);
 
 }
 
